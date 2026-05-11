@@ -4,78 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EuclidOS | Precision & Performance</title>
-    <link rel="icon" type="image/jpeg" href="logo.jpeg">
+    <link rel="icon" type="image/jpeg" href="assets/screenshots/logo.jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0a0a0a; color: #eee; }
-        .hero-gradient {
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+        body { background-color: #0a0a0a; color: #eee; overflow-x: hidden; }
+        .hero-gradient { background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%); }
+        .text-euclid { color: #4370ff; }
+        .bg-euclid { background-color: #4370ff; }
+        
+        /* Drawer Animation */
+        #side-drawer {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
         }
-        .accent-border { border-bottom: 2px solid #3b82f6; }
+        #side-drawer.open { transform: translateX(0); }
     </style>
 </head>
 <body class="font-sans antialiased">
 
-    <!-- Navigation -->
-    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
-        <div class="text-2xl font-bold tracking-tighter text-blue-500">EUCLID<span class="text-white">OS</span></div>
-        <div class="space-x-6 hidden md:block">
-            <a href="#" class="hover:text-blue-400 transition">Devices</a>
-            <a href="#" class="hover:text-blue-400 transition">Wiki</a>
-            <a href="https://github.com" class="bg-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-700">GitHub</a>
+    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-8 h-8 rounded">
+            <div class="text-2xl font-bold tracking-tighter text-euclid">EUCLID<span class="text-white">OS</span></div>
         </div>
+        
+        <button id="menu-btn" class="p-2 focus:outline-none">
+            <div class="w-6 h-0.5 bg-white mb-1.5"></div>
+            <div class="w-6 h-0.5 bg-white mb-1.5"></div>
+            <div class="w-6 h-0.5 bg-white"></div>
+        </button>
     </nav>
-    
-     <!-- Screenshots Page -->
-     <a href="screenshots.html" class="hover:text-blue-400 transition text-white">Screenshots</a>
 
-     <!-- Downloads Page -->
-     <a href="downloads.html" class="bg-euclid px-8 py-4 rounded-2xl font-bold">Get EuclidOS</a>
+    <div id="side-drawer" class="fixed top-0 right-0 h-full w-64 bg-zinc-900 border-l border-zinc-800 z-50 p-8 shadow-2xl">
+        <button id="close-btn" class="text-gray-400 mb-8 hover:text-white">✕ Close</button>
+        <div class="flex flex-col gap-8 text-xl font-bold">
+            <a href="index.html" class="hover:text-euclid transition">Home</a>
+            <a href="screenshots.html" class="hover:text-euclid transition">Screenshots</a>
+            <a href="downloads.html" class="hover:text-euclid transition text-euclid">Downloads</a>
+            <hr class="border-zinc-800">
+            <a href="https://github.com/euclidOS-AOSP" class="text-sm text-gray-500 hover:text-white">GitHub Source</a>
+        </div>
+    </div>
 
-    <!-- Hero Section -->
-    <header class="hero-gradient py-20 px-6 text-center">
+    <header class="hero-gradient py-24 px-6 text-center">
         <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">
-            Geometry in <span class="text-blue-500">Motion.</span>
+            Geometry in <span class="text-euclid">Motion.</span>
         </h1>
         <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-            A refined AOSP-based experience focusing on precision, speed, and geometric aesthetics. Built for the modern power user.
+            A refined AOSP-based experience focusing on precision, speed, and geometric aesthetics.
         </p>
-        <div class="flex flex-col md:flex-row justify-center gap-4">
-            <a href="#download" class="bg-white text-black px-8 py-3 rounded-full font-bold text-lg hover:bg-gray-200 transition">Get EuclidOS</a>
-            <a href="#" class="border border-gray-700 px-8 py-3 rounded-full font-bold text-lg hover:bg-gray-900 transition">View Source</a>
+        <div class="flex flex-col items-center gap-4">
+            <a href="downloads.html" class="bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-gray-200 transition">Get EuclidOS</a>
         </div>
     </header>
 
-    <!-- Features -->
-    <section class="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-3 gap-12">
-        <div class="p-6 bg-zinc-900 rounded-2xl">
-            <h3 class="text-xl font-bold mb-3 text-blue-400">Minimalist</h3>
-            <p class="text-gray-400">Zero bloat. Only the essential tools you need for a clean, distraction-free environment.</p>
-        </div>
-        <div class="p-6 bg-zinc-900 rounded-2xl">
-            <h3 class="text-xl font-bold mb-3 text-blue-400">Fluid UI</h3>
-            <p class="text-gray-400">Custom animations and geometric design patterns that make every interaction feel natural.</p>
-        </div>
-        <div class="p-6 bg-zinc-900 rounded-2xl">
-            <h3 class="text-xl font-bold mb-3 text-blue-400">Optimized</h3>
-            <p class="text-gray-400">Under-the-hood kernel tweaks to ensure maximum battery life and peak performance.</p>
-        </div>
-    </section>
+    <script>
+        const menuBtn = document.getElementById('menu-btn');
+        const closeBtn = document.getElementById('close-btn');
+        const drawer = document.getElementById('side-drawer');
 
-    <!-- Download Section -->
-    <section id="download" class="py-20 bg-blue-600 text-center px-6">
-        <h2 class="text-3xl font-bold mb-4">Ready to upgrade?</h2>
-        <p class="mb-8 text-blue-100">Find your device and join the EuclidOS community today.</p>
-        <button class="bg-black text-white px-10 py-4 rounded-xl font-bold hover:scale-105 transition transform">
-            Go to Downloads
-        </button>
-    </section>
-
-    <!-- Footer -->
-    <footer class="py-10 text-center text-gray-500 text-sm">
-        &copy; 2026 EuclidOS Project. Not affiliated with Google LLC.
-    </footer>
-
+        menuBtn.addEventListener('click', () => drawer.classList.add('open'));
+        closeBtn.addEventListener('click', () => drawer.classList.remove('open'));
+        
+        // Close drawer if clicking outside
+        document.addEventListener('click', (e) => {
+            if (!drawer.contains(e.target) && !menuBtn.contains(e.target)) {
+                drawer.classList.remove('open');
+            }
+        });
+    </script>
 </body>
 </html>
-
