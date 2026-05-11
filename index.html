@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EuclidOS | Precision & Performance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0a0a0a; color: #eee; }
+        .hero-gradient {
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%);
+        }
+        .accent-border { border-bottom: 2px solid #3b82f6; }
+    </style>
+</head>
+<body class="font-sans antialiased">
+
+    <!-- Navigation -->
+    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto">
+        <div class="text-2xl font-bold tracking-tighter text-blue-500">EUCLID<span class="text-white">OS</span></div>
+        <div class="space-x-6 hidden md:block">
+            <a href="#" class="hover:text-blue-400 transition">Devices</a>
+            <a href="#" class="hover:text-blue-400 transition">Wiki</a>
+            <a href="https://github.com" class="bg-blue-600 px-4 py-2 rounded-lg font-medium hover:bg-blue-700">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-gradient py-20 px-6 text-center">
+        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">
+            Geometry in <span class="text-blue-500">Motion.</span>
+        </h1>
+        <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
+            A refined AOSP-based experience focusing on precision, speed, and geometric aesthetics. Built for the modern power user.
+        </p>
+        <div class="flex flex-col md:flex-row justify-center gap-4">
+            <a href="#download" class="bg-white text-black px-8 py-3 rounded-full font-bold text-lg hover:bg-gray-200 transition">Get EuclidOS</a>
+            <a href="#" class="border border-gray-700 px-8 py-3 rounded-full font-bold text-lg hover:bg-gray-900 transition">View Source</a>
+        </div>
+    </header>
+
+    <!-- Features -->
+    <section class="max-w-6xl mx-auto py-20 px-6 grid md:grid-cols-3 gap-12">
+        <div class="p-6 bg-zinc-900 rounded-2xl">
+            <h3 class="text-xl font-bold mb-3 text-blue-400">Minimalist</h3>
+            <p class="text-gray-400">Zero bloat. Only the essential tools you need for a clean, distraction-free environment.</p>
+        </div>
+        <div class="p-6 bg-zinc-900 rounded-2xl">
+            <h3 class="text-xl font-bold mb-3 text-blue-400">Fluid UI</h3>
+            <p class="text-gray-400">Custom animations and geometric design patterns that make every interaction feel natural.</p>
+        </div>
+        <div class="p-6 bg-zinc-900 rounded-2xl">
+            <h3 class="text-xl font-bold mb-3 text-blue-400">Optimized</h3>
+            <p class="text-gray-400">Under-the-hood kernel tweaks to ensure maximum battery life and peak performance.</p>
+        </div>
+    </section>
+
+    <!-- Download Section -->
+    <section id="download" class="py-20 bg-blue-600 text-center px-6">
+        <h2 class="text-3xl font-bold mb-4">Ready to upgrade?</h2>
+        <p class="mb-8 text-blue-100">Find your device and join the EuclidOS community today.</p>
+        <button class="bg-black text-white px-10 py-4 rounded-xl font-bold hover:scale-105 transition transform">
+            Go to Downloads
+        </button>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-10 text-center text-gray-500 text-sm">
+        &copy; 2026 EuclidOS Project. Not affiliated with Google LLC.
+    </footer>
+
+</body>
+</html>
+
