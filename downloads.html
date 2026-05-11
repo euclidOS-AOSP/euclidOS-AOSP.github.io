@@ -4,58 +4,102 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Downloads | EuclidOS</title>
+    <link rel="icon" type="image/jpeg" href="assets/screenshots/logo.jpeg">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { background-color: #0a0a0a; color: #eee; }
+        body { background-color: #0a0a0a; color: #eee; overflow-x: hidden; }
         .text-euclid { color: #4370ff; }
         .bg-euclid { background-color: #4370ff; }
+        
+        /* Drawer Animation */
+        #side-drawer {
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out;
+        }
+        #side-drawer.open { transform: translateX(0); }
     </style>
 </head>
 <body class="font-sans antialiased">
 
-    <nav class="p-6 max-w-6xl mx-auto flex justify-between items-center">
-        <a href="index.html" class="text-gray-400 hover:text-white transition">← Back</a>
-        <span class="font-bold tracking-widest">EUCLIDOS <span class="text-euclid">V3.2</span></span>
+    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto relative z-10">
+        <div class="flex items-center gap-3">
+            <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-8 h-8 rounded">
+            <div class="text-2xl font-bold tracking-tighter text-euclid">EUCLID<span class="text-white">OS</span></div>
+        </div>
+        
+        <button id="menu-btn" class="p-2 focus:outline-none group">
+            <div class="w-6 h-0.5 bg-white mb-1.5 group-hover:bg-euclid transition"></div>
+            <div class="w-6 h-0.5 bg-white mb-1.5 group-hover:bg-euclid transition"></div>
+            <div class="w-6 h-0.5 bg-white group-hover:bg-euclid transition"></div>
+        </button>
     </nav>
 
-    <header class="py-16 text-center">
-        <h1 class="text-5xl font-bold mb-4">Get <span class="text-euclid">EuclidOS</span></h1>
-        <p class="text-gray-400">Select your device to begin the journey.</p>
+    <div id="side-drawer" class="fixed top-0 right-0 h-full w-72 bg-zinc-900 border-l border-zinc-800 z-50 flex flex-col shadow-2xl">
+        <div class="p-8 border-b border-zinc-800 flex justify-between items-center">
+            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Menu</span>
+            <button id="close-btn" class="text-gray-400 hover:text-white transition text-sm">✕ Close</button>
+        </div>
+
+        <div class="flex flex-col gap-6 p-8 text-xl font-bold flex-grow">
+            <a href="index.html" class="hover:text-euclid transition">Home</a>
+            <a href="screenshots.html" class="hover:text-euclid transition">Screenshots</a>
+            <a href="downloads.html" class="hover:text-euclid transition text-euclid">Downloads</a>
+            <hr class="border-zinc-800">
+            <a href="https://github.com/euclidOS-AOSP" class="text-sm text-gray-500 hover:text-white">GitHub Source</a>
+        </div>
+    </div>
+
+    <header class="py-16 px-6 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4">Official <span class="text-euclid">Builds.</span></h1>
+        <p class="text-gray-500 max-w-xl mx-auto">Select your device to download the latest EuclidOS v3.2 "Baklava" release.</p>
     </header>
 
-    <main class="max-w-4xl mx-auto px-6 pb-20">
-        <div class="bg-zinc-900 border border-zinc-800 rounded-3xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-2xl">
-            <div class="flex items-center gap-6">
-                <div class="w-16 h-16 bg-zinc-800 rounded-2xl flex items-center justify-center text-3xl">📱</div>
-                <div>
-                    <h2 class="text-2xl font-bold">Samsung Galaxy Note10+ 5G</h2>
-                    <p class="text-euclid font-mono text-sm uppercase tracking-wider">Official • d2x</p>
-                </div>
-            </div>
+    <main class="max-w-6xl mx-auto px-6 pb-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             
-            <div class="text-right">
-                <p class="text-xs text-gray-500 mb-1">Maintainer: <span class="text-gray-300">MODEDGES</span></p>
-                <a href="#" class="inline-block bg-euclid hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-2xl transition">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 hover:border-euclid transition group shadow-xl">
+                <div class="flex justify-between items-start mb-8">
+                    <div class="w-14 h-14 bg-euclid/10 rounded-2xl flex items-center justify-center text-euclid text-xl font-bold border border-euclid/20">d2x</div>
+                    <span class="bg-green-500/10 text-green-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">Stable</span>
+                </div>
+                
+                <h3 class="text-2xl font-bold">Galaxy Note10+ 5G</h3>
+                <p class="text-gray-500 text-sm mt-1">Maintainer: <span class="text-gray-300">MODEDGES</span></p>
+                
+                <div class="mt-8 pt-8 border-t border-zinc-800 flex flex-col gap-3">
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500 uppercase">Version</span>
+                        <span class="font-bold">3.2 (Baklava)</span>
+                    </div>
+                    <div class="flex justify-between text-xs">
+                        <span class="text-gray-500 uppercase">Update</span>
+                        <span class="font-bold">April 2026</span>
+                    </div>
+                </div>
+
+                <a href="#" class="mt-8 block text-center bg-zinc-800 group-hover:bg-euclid group-hover:text-white transition py-4 rounded-2xl font-bold text-sm shadow-inner">
                     Download Build
                 </a>
             </div>
+
+            <div class="bg-zinc-900/30 border border-zinc-800 border-dashed rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center opacity-40">
+                <div class="w-14 h-14 border border-zinc-700 rounded-2xl flex items-center justify-center text-zinc-700 text-2xl mb-4">?</div>
+                <h3 class="text-lg font-bold text-zinc-500 tracking-tight">Expanding...</h3>
+                <p class="text-zinc-600 text-[10px] uppercase tracking-widest mt-2">Next device in testing</p>
+            </div>
+
+            <div class="bg-zinc-900/30 border border-zinc-800 border-dashed rounded-[2.5rem] p-8 flex flex-col items-center justify-center text-center opacity-40">
+                <div class="w-14 h-14 border border-zinc-700 rounded-2xl flex items-center justify-center text-zinc-700 text-2xl mb-4">?</div>
+                <h3 class="text-lg font-bold text-zinc-500 tracking-tight">Expanding...</h3>
+                <p class="text-zinc-600 text-[10px] uppercase tracking-widest mt-2">Next device in testing</p>
+            </div>
+
         </div>
 
-        <div class="mt-12 grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-            <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800">
-                <p class="text-gray-500 text-xs uppercase mb-1">Security Patch</p>
-                <p class="font-bold">April 2026</p>
-            </div>
-            <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800">
-                <p class="text-gray-500 text-xs uppercase mb-1">Android Version</p>
-                <p class="font-bold">16 (Baklava)</p>
-            </div>
-            <div class="bg-zinc-900/50 p-6 rounded-2xl border border-zinc-800">
-                <p class="text-gray-500 text-xs uppercase mb-1">Kernel</p>
-                <p class="font-bold">FreeRuNnEr 4.14</p>
-            </div>
-        </div>
-    </main>
-
-</body>
-</html>
+        <div class="mt-24 p-12 bg-zinc-900/50 rounded-[3rem] border border-zinc-800 text-center">
+            <h3 class="text-2xl font-bold mb-4 italic">Community Driven.</h3>
+            <p class="text-gray-500 text-sm mb-8 max-w-md mx-auto">We are looking for maintainers to bring EuclidOS to more hardware. Ready to build for your device?</p>
+            <div class="flex flex-col md:flex-row justify-center gap-4">
+                <a href="https://t.me/yourgroup" class="text-euclid font-bold hover:underline">Apply to Maintain</a>
+                <span class="hidden md:block text-zinc-700">|</span>
+                <a href="https://github.

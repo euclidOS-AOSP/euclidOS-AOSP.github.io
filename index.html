@@ -8,7 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { background-color: #0a0a0a; color: #eee; overflow-x: hidden; }
-        .hero-gradient { background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%); }
+        .hero-gradient { 
+            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%); 
+        }
         .text-euclid { color: #4370ff; }
         .bg-euclid { background-color: #4370ff; }
         
@@ -28,21 +30,35 @@
             <div class="text-2xl font-bold tracking-tighter text-euclid">EUCLID<span class="text-white">OS</span></div>
         </div>
         
-        <button id="menu-btn" class="p-2 focus:outline-none">
-            <div class="w-6 h-0.5 bg-white mb-1.5"></div>
-            <div class="w-6 h-0.5 bg-white mb-1.5"></div>
-            <div class="w-6 h-0.5 bg-white"></div>
+        <button id="menu-btn" class="p-2 focus:outline-none group">
+            <div class="w-6 h-0.5 bg-white mb-1.5 group-hover:bg-euclid transition"></div>
+            <div class="w-6 h-0.5 bg-white mb-1.5 group-hover:bg-euclid transition"></div>
+            <div class="w-6 h-0.5 bg-white group-hover:bg-euclid transition"></div>
         </button>
     </nav>
 
-    <div id="side-drawer" class="fixed top-0 right-0 h-full w-64 bg-zinc-900 border-l border-zinc-800 z-50 p-8 shadow-2xl">
-        <button id="close-btn" class="text-gray-400 mb-8 hover:text-white">✕ Close</button>
-        <div class="flex flex-col gap-8 text-xl font-bold">
+    <div id="side-drawer" class="fixed top-0 right-0 h-full w-72 bg-zinc-900 border-l border-zinc-800 z-50 flex flex-col shadow-2xl">
+        <div class="p-8 border-b border-zinc-800 flex justify-between items-center">
+            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Menu</span>
+            <button id="close-btn" class="text-gray-400 hover:text-white transition text-sm">✕ Close</button>
+        </div>
+
+        <div class="flex flex-col gap-6 p-8 text-xl font-bold flex-grow">
             <a href="index.html" class="hover:text-euclid transition">Home</a>
             <a href="screenshots.html" class="hover:text-euclid transition">Screenshots</a>
-            <a href="downloads.html" class="hover:text-euclid transition text-euclid">Downloads</a>
+            <a href="downloads.html" class="hover:text-euclid transition">Downloads</a>
             <hr class="border-zinc-800">
             <a href="https://github.com/euclidOS-AOSP" class="text-sm text-gray-500 hover:text-white">GitHub Source</a>
+        </div>
+
+        <div class="p-8 bg-zinc-950 border-t border-zinc-800">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-euclid flex items-center justify-center text-[10px] font-bold text-white">ME</div>
+                <div>
+                    <p class="text-[10px] text-gray-500 uppercase leading-none">Lead Dev</p>
+                    <p class="text-xs font-bold text-white">MODEDGES</p>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -51,12 +67,47 @@
             Geometry in <span class="text-euclid">Motion.</span>
         </h1>
         <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-            A refined AOSP-based experience focusing on precision, speed, and geometric aesthetics.
+            A refined AOSP-based experience focusing on precision, speed, and geometric aesthetics. Built for the modern power user.
         </p>
         <div class="flex flex-col items-center gap-4">
-            <a href="downloads.html" class="bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-gray-200 transition">Get EuclidOS</a>
+            <a href="downloads.html" class="bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-gray-200 transition shadow-lg">Get EuclidOS</a>
         </div>
     </header>
+
+    <section class="max-w-6xl mx-auto py-20 px-6">
+        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 border-b border-zinc-800 pb-8">
+            <div>
+                <h2 class="text-3xl font-bold italic">The <span class="text-euclid">Lineup.</span></h2>
+                <p class="text-gray-500 mt-2">Precision engineered for premium hardware.</p>
+            </div>
+            <a href="downloads.html" class="text-euclid font-bold hover:underline">View all devices →</a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 flex items-center justify-between group hover:border-euclid transition shadow-xl">
+                <div>
+                    <span class="text-xs font-mono text-euclid uppercase tracking-widest">Latest Stable</span>
+                    <h3 class="text-2xl font-bold mt-1">Galaxy Note10+ 5G</h3>
+                    <p class="text-gray-500 text-sm italic">Euclid v3.2 Baklava</p>
+                </div>
+                <div class="text-4xl group-hover:scale-110 transition duration-500">📱</div>
+            </div>
+
+            <div class="bg-zinc-900/30 border border-zinc-800 border-dashed rounded-[2.5rem] p-8 flex items-center justify-between opacity-50">
+                <div>
+                    <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Coming Soon</span>
+                    <h3 class="text-2xl font-bold mt-1 text-zinc-600">Expanding...</h3>
+                    <p class="text-gray-600 text-sm">Next device in testing</p>
+                </div>
+                <div class="text-4xl grayscale">🛰️</div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-20 text-center border-t border-zinc-900">
+        <div class="text-euclid font-bold mb-4">EUCLIDOS</div>
+        <p class="text-gray-600 text-sm">&copy; 2026 EuclidOS Project. Not affiliated with Google LLC.</p>
+    </footer>
 
     <script>
         const menuBtn = document.getElementById('menu-btn');
