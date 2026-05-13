@@ -3,125 +3,745 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EuclidOS | Precision & Performance</title>
+    <title>EuclidOS | Geometry in Motion. | Precision & Performance | AOSP Based OS</title>
     <link rel="icon" type="image/jpeg" href="assets/screenshots/logo.jpeg">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body { background-color: #0a0a0a; color: #eee; overflow-x: hidden; }
-        .hero-gradient { 
-            background: radial-gradient(circle at center, #1a1a1a 0%, #0a0a0a 100%); 
-        }
-        .text-euclid { color: #4370ff; }
-        .bg-euclid { background-color: #4370ff; }
-        
-        /* Drawer Animation */
-        #side-drawer {
-            transform: translateX(100%);
-            transition: transform 0.3s ease-in-out;
-        }
-        #side-drawer.open { transform: translateX(0); }
-    </style>
-</head>
-<body class="font-sans antialiased">
 
-    <nav class="p-6 flex justify-between items-center max-w-6xl mx-auto relative z-10">
-        <div class="flex items-center gap-3">
-            <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-8 h-8 rounded">
-            <div class="text-2xl font-bold tracking-tighter text-euclid">EUCLID<span class="text-white">OS</span></div>
-        </div>
+    <!-- Fonts: Inter & Space Grotesk -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- GSAP Animation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    
+    <!-- Lenis Smooth Scroll -->
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+    <!-- Main Styles -->
+    <style>
+        /* ───── Core Tokens ───── */
+        :root {
+            --clr-primary: #4d78ff;
+            --clr-primary-dim: rgba(77, 120, 255, 0.1);
+            --bg-main: #03030a;
+            --bg-card: rgba(12, 12, 24, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glow: #9ea8ff;
+            --accent-cyan: #00f0ff;
+            --accent-magenta: #ff007f;
+            --neon-blue: #0066ff;
+            --text-main: #f0f0f5;
+            --text-muted: #8888a0;
+            --font-base: 'Inter', sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: var(--font-base);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ───── Scrollbar ───── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
+
+        /* ───── Noise Overlay ───── */
+        #noise-overlay {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.03;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+        }
+
+        /* ───── Scroll Progress Bar ───── */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            z-index: 10001;
+            width: 0%;
+            box-shadow: 0 0 10px var(--clr-primary);
+        }
+
+        /* ───── Glass Utilities ───── */
+        .glass {
+            background: rgba(12, 12, 24, 0.5);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
         
-        <button id="menu-btn" class="p-2 focus:outline-none group">
-            <div class="w-6 h-0.5 bg-white mb-1.5 group-hover:bg-euclid transition"></div>
-            <div class="w-6 h-0.5 bg-white mb-1.5 group-hover:bg-euclid transition"></div>
-            <div class="w-6 h-0.5 bg-white group-hover:bg-euclid transition"></div>
-        </button>
+        .glass-card {
+            background: rgba(20, 20, 35, 0.4);
+            backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 30px var(--clr-primary-dim), inset 0 1px 0 rgba(255,255,255,0.1);
+            transform: translateY(-6px);
+        }
+
+        /* ───── Animations ───── */
+        .reveal-section {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        /* ───── Cursor ───── */
+        .cursor-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%; background: var(--clr-primary);
+            position: fixed; pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%); transition: width 0.3s, height 0.3s;
+            mix-blend-mode: screen;
+        }
+        .cursor-ring {
+            width: 40px; height: 40px;
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 50%;
+            position: fixed; pointer-events: none; z-index: 99998;
+            transform: translate(-50%, -50%); transition: all 0.15s ease-out;
+        }
+        body.dark-theme .cursor-dot { background: var(--glow); }
+
+        /* ───── Ambient Mesh Gradient ───── */
+        #ambient-bg {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .ambient-blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); opacity: 0.4;
+            animation: ambientFloat 20s ease-in-out infinite alternate;
+        }
+        @keyframes ambientFloat {
+            0%   { transform: translate(0, 0) scale(1); }
+            33%  { transform: translate(30px, -50px) scale(1.1); }
+            66%  { transform: translate(-20px, 30px) scale(0.9); }
+            100% { transform: translate(50px, -20px) scale(1); }
+        }
+
+        /* ───── Hero Typography ───── */
+        .hero-title {
+            font-family: var(--font-display);
+            font-size: clamp(3.5rem, 10vw, 7rem);
+            line-height: 1.05;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.65) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* ───── 3D Tilt Card ───── */
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.1s linear;
+        }
+        .tilt-card .glow-border {
+            position: absolute; inset: -1px; border-radius: inherit;
+            background: conic-gradient(from 0deg, transparent, 70%, var(--clr-primary), transparent);
+            opacity: 0; transition: opacity 0.5s;
+            z-index: -1;
+        }
+        .tilt-card:hover .glow-border { opacity: 0.6; }
+
+        /* ───── Magnetic Button ───── */
+        .magnetic-btn {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        .magnetic-btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 0; height: 0; border-radius: 50%;
+            background: rgba(255,255,255,0.2); transform: translate(-50%, -50%);
+            transition: width 0.5s, height 0.5s;
+        }
+        .magnetic-btn:hover::before { width: 300%; height: 300%; }
+
+        /* ───── Hamburger ───── */
+        .ham-line { display: block; width: 24px; height: 1.5px; background: white; transition: all 0.3s ease; transform-origin: center; }
+        .ham-open .ham-line:first-child { transform: translateY(6px) rotate(45deg); }
+        .ham-open .ham-line:last-child { transform: translateY(-6px) rotate(-45deg); }
+
+        /* ───── Marquee ───── */
+        .marquee-track { display: flex; width: max-content; animation: marqueeScroll 30s linear infinite; }
+        @keyframes marqueeScroll { 0%{ transform: translateX(0); } 100%{ transform: translateX(-50%); } }
+
+        /* ───── Link Underline ───── */
+        .link-hover { position: relative; }
+        .link-hover::after {
+            content: ''; position: absolute; bottom: -2px; left: 0;
+            width: 0; height: 1px; background: var(--clr-primary); transition: width 0.3s;
+        }
+        .link-hover:hover::after { width: 100%; }
+    </style>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        euclid: '#4d78ff',
+                        'euclid-dark': '#03030a',
+                        'euclid-muted': '#8888a0',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="dark-theme relative min-h-[200vh]" style="background: linear-gradient(180deg, #020208 0%, #07070f 50%, #0a0a14 100%);">
+
+    <!-- ─── Ambient Mesh Gradient Background ─── -->
+    <div id="ambient-bg">
+        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, #4d78ff 0%, transparent 70%); top: -200px; left: -100px; animation-delay: 0s;"></div>
+        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, #6c5ce7 0%, transparent 70%); top: 20%; right: -200px; animation-delay: -5s;"></div>
+        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, #007bff 0%, transparent 70%); top: 50%; left: -150px; animation-delay: -10s;"></div>
+        <div class="ambient-blob" style="width: 550px; height: 550px; background: radial-gradient(circle, #2d3436 0%, transparent 70%); top: 70%; right: -100px; animation-delay: -15s;"></div>
+    </div>
+
+    <!-- ─── Noise Texture ─── -->
+    <div id="noise-overlay"></div>
+
+    <!-- ─── Scroll Progress Indicator ─── -->
+    <div id="scroll-progress"></div>
+
+    <!-- ─── Custom Cursor ─── -->
+    <div class="cursor-dot hidden md:block" id="cursor-dot"></div>
+    <div class="cursor-ring hidden md:block" id="cursor-ring"></div>
+
+    <!-- ═══════════════════════════ ☆ NAVIGATION ☆ ═══════════════════════════ -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-[100] transition-all duration-500" style="transform: translateY(-100%);">
+        <div class="absolute inset-0 glass opacity-0 transition-opacity duration-500" id="nav-glass"></div>
+        <div class="relative max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="#" class="flex items-center gap-3 group">
+                <div class="relative w-10 h-10">
+                    <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-full h-full rounded-lg border border-white/10 group-hover:border-euclid/50 transition">
+                    <div class="absolute inset-0 rounded-lg bg-euclid/20 blur-md opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                </div>
+                <div class="flex items-baseline gap-1">
+                    <span class="text-xl font-display font-bold text-white tracking-tight">EUCLID</span><span class="text-xl font-display font-bold text-euclid">OS</span>
+                </div>
+            </a>
+            <div class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1 border border-white/10">
+                <a href="#about" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition link-hover">About</a>
+                <a href="#features" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition link-hover">Features</a>
+                <a href="#screenshots" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition link-hover">Screenshots</a>
+                <a href="#downloads" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition link-hover">Downloads</a>
+                <a href="#contact" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition link-hover">Contact</a>
+            </div>
+            <div class="hidden md:flex items-center gap-4">
+                <a href="downloads.html" class="px-5 py-2.5 bg-euclid text-white text-sm font-semibold rounded-full hover:bg-euclid/90 transition shadow-lg shadow-euclid/20 hover:shadow-euclid/40 hover:-translate-y-0.5 transition duration-300">Get EuclidOS</a>
+            </div>
+            <button id="menu-btn" class="md:hidden p-2 flex flex-col gap-1.5 z-[101]">
+                <span class="ham-line"></span>
+                <span class="ham-line"></span>
+            </button>
+        </div>
     </nav>
 
-    <div id="side-drawer" class="fixed top-0 right-0 h-full w-72 bg-zinc-900 border-l border-zinc-800 z-50 flex flex-col shadow-2xl">
-        <div class="p-8 border-b border-zinc-800 flex justify-between items-center">
-            <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Menu</span>
-            <button id="close-btn" class="text-gray-400 hover:text-white transition text-sm">✕ Close</button>
-        </div>
-
-        <div class="flex flex-col gap-6 p-8 text-xl font-bold flex-grow">
-            <a href="index.html" class="hover:text-euclid transition">Home</a>
-            <a href="screenshots.html" class="hover:text-euclid transition">Screenshots</a>
-            <a href="downloads.html" class="hover:text-euclid transition">Downloads</a>
-            <hr class="border-zinc-800">
-            <a href="https://github.com/euclidOS-AOSP" class="text-sm text-gray-500 hover:text-white">GitHub Source</a>
-        </div>
-
-        <div class="p-8 bg-zinc-950 border-t border-zinc-800">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-full bg-euclid flex items-center justify-center text-[10px] font-bold text-white">ME</div>
-                <div>
-                    <p class="text-[10px] text-gray-500 uppercase leading-none">Lead Dev</p>
-                    <p class="text-xs font-bold text-white">MODEDGES</p>
+    <!-- ─── Mobile Drawer ─── -->
+    <div id="mobile-drawer" class="fixed inset-0 z-[99] pointer-events-none opacity-0 transition-opacity duration-300">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="drawer-backdrop"></div>
+        <div class="absolute top-0 right-0 h-full w-80 bg-euclid-dark/95 backdrop-blur-2xl border-l border-white/10 transform translate-x-full transition-transform duration-500 ease-out flex flex-col" id="drawer-panel">
+            <div class="p-8 flex flex-col gap-1 flex-grow">
+                <div class="text-xs font-display text-gray-500 uppercase tracking-widest mb-6 pointer-events-none">Navigation</div>
+                <a href="#about" class="drawer-link py-3 text-xl font-display font-medium text-white hover:text-euclid transition">About</a>
+                <a href="#features" class="drawer-link py-3 text-xl font-display font-medium text-gray-300 hover:text-euclid transition">Features</a>
+                <a href="#screenshots" class="drawer-link py-3 text-xl font-display font-medium text-gray-300 hover:text-euclid transition">Screenshots</a>
+                <a href="#downloads" class="drawer-link py-3 text-xl font-display font-medium text-gray-300 hover:text-euclid transition">Downloads</a>
+                <a href="#contact" class="drawer-link py-3 text-xl font-display font-medium text-gray-300 hover:text-euclid transition">Contact</a>
+                <div id="social-links-drawer" class="mt-8 flex gap-4 text-sm text-gray-500 font-medium">
+                    <a href="#" class="hover:text-white transition">T</a>
+                    <a href="#" class="hover:text-white transition">I</a>
+                    <a href="#" class="hover:text-white transition">G</a>
                 </div>
+            </div>
+            <div class="p-8 border-t border-white/5">
+                <a href="downloads.html" class="block w-full py-4 bg-euclid text-white text-center font-bold rounded-2xl hover:bg-euclid/90 transition shadow-lg shadow-euclid/20">Get EuclidOS</a>
             </div>
         </div>
     </div>
 
-    <header class="hero-gradient py-24 px-6 text-center">
-        <h1 class="text-5xl md:text-7xl font-extrabold mb-6 tracking-tight">
-            Geometry in <span class="text-euclid">Motion.</span>
-        </h1>
-        <p class="text-gray-400 text-lg md:text-xl max-w-2xl mx-auto mb-10">
-            A refined AOSP-based experience focusing on precision, speed, and geometric aesthetics. Built for the modern power user.
-        </p>
-        <div class="flex flex-col items-center gap-4">
-            <a href="downloads.html" class="bg-white text-black px-12 py-4 rounded-full font-bold text-lg hover:bg-gray-200 transition shadow-lg">Get EuclidOS</a>
+    <!-- ═══════════════════════════ ☆ HERO ☆ ═══════════════════════════ -->
+    <header id="hero" class="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-euclid/10 rounded-full blur-[120px] pointer-events-none" id="hero-glow"></div>
+        </div>
+        <div class="relative z-10 max-w-7xl mx-auto px-6 text-center">
+                    <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-8 opacity-0" id="hero-badge">
+                        <span class="w-3 h-3 border-2 border-green-400 rounded-full animate-[ping_2s_linear_infinite]"></span>
+                <span class="text-sm text-gray-300 font-medium">V3.2 BAKLAVA IS LIVE</span>
+            </div>
+            <h1 class="hero-title mb-6 opacity-0" id="hero-title">
+                Geometry in<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Motion.</span>
+            </h1>
+            <p class="text-lg md:text-xl text-euclid-muted max-w-2xl mx-auto leading-relaxed mb-10 opacity-0" id="hero-subtitle">
+                A refined AOSP-based experience focusing on <span class="text-white font-medium">precision</span>, <span class="text-white font-medium">speed</span>, and geometric aesthetics. Built for the modern power user.
+            </p>
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 opacity-0" id="hero-cta">
+                <a href="downloads.html" class="magnetic-btn relative z-10 px-8 py-4 bg-euclid text-white font-bold rounded-full shadow-[0_0_30px_rgba(77,120,255,0.3)] hover:shadow-[0_0_50px_rgba(77,120,255,0.5)] transition duration-500 hover:-translate-y-1 group">
+                    <span class="relative z-10">Get EuclidOS</span>
+                    <span class="absolute inset-0 rounded-full bg-gradient-to-r from-euclid to-cyan-500 opacity-0 group-hover:opacity-100 transition duration-500"></span>
+                </a>
+                <a href="#features" class="px-8 py-4 border border-white/10 rounded-full font-medium text-white/80 hover:border-white/30 hover:bg-white/5 transition duration-300 backdrop-blur-sm">Explore Features</a>
+            </div>
+            <div class="mt-16 relative opacity-0" id="hero-visual">
+                <div class="glass-card rounded-3xl p-2 max-w-4xl mx-auto relative overflow-hidden group cursor-default transform-gpu">
+                    <div class="absolute -top-20 -left-20 w-40 h-40 bg-euclid/20 rounded-full blur-[60px] pointer-events-none group-hover:opacity-80 transition duration-700"></div>
+                    <div class="absolute -bottom-20 -right-20 w-40 h-40 bg-cyan-500/10 rounded-full blur-[60px] pointer-events-none group-hover:opacity-80 transition duration-700"></div>
+                    <div class="relative bg-gradient-to-br from-white/5 to-transparent rounded-2xl p-8 flex flex-col items-center justify-center min-h-[300px] md:min-h-[400px]">
+                        <div class="flex gap-4 mb-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium border border-euclid/50 text-euclid bg-euclid/10 backdrop-blur-sm">Fast</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium border border-purple-400/50 text-purple-400 bg-purple-400/10 backdrop-blur-sm">Stable</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-medium border border-green-400/50 text-green-400 bg-green-400/10 backdrop-blur-sm">Secure</span>
+                        </div>
+                        <div class="text-[80px] md:text-[120px]">📱</div>
+                        <p class="text-sm text-gray-400 mt-4 font-mono">EXPERIENCE THE GEOMETRY OF MOTION</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </header>
 
-    <section class="max-w-6xl mx-auto py-20 px-6">
-        <div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-4 border-b border-zinc-800 pb-8">
-            <div>
-                <h2 class="text-3xl font-bold italic">The <span class="text-euclid">Lineup.</span></h2>
-                <p class="text-gray-500 mt-2">Precision engineered for premium hardware.</p>
-            </div>
-            <a href="downloads.html" class="text-euclid font-bold hover:underline">View all devices →</a>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-zinc-900 border border-zinc-800 rounded-[2.5rem] p-8 flex items-center justify-between group hover:border-euclid transition shadow-xl">
-                <div>
-                    <span class="text-xs font-mono text-euclid uppercase tracking-widest">Latest Stable</span>
-                    <h3 class="text-2xl font-bold mt-1">Galaxy Note10+ 5G</h3>
-                    <p class="text-gray-500 text-sm italic">Euclid v3.2 Baklava</p>
-                </div>
-                <div class="text-4xl group-hover:scale-110 transition duration-500">📱</div>
-            </div>
-
-            <div class="bg-zinc-900/30 border border-zinc-800 border-dashed rounded-[2.5rem] p-8 flex items-center justify-between opacity-50">
-                <div>
-                    <span class="text-xs font-mono text-gray-500 uppercase tracking-widest">Coming Soon</span>
-                    <h3 class="text-2xl font-bold mt-1 text-zinc-600">Expanding...</h3>
-                    <p class="text-gray-600 text-sm">Next device in testing</p>
-                </div>
-                <div class="text-4xl grayscale">🛰️</div>
+    <!-- ═══════════════════════════ ☆ TRUST BADGES ☆ ═══════════════════════════ -->
+    <section class="relative py-12 overflow-hidden border-y border-white/5 mt-20">
+        <div class="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-[#07070f] to-transparent z-10 pointer-events-none"></div>
+        <div class="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-[#07070f] to-transparent z-10 pointer-events-none"></div>
+        <div class="marquee-container overflow-hidden relative" style="mask-image: linear-gradient(to right, transparent, black 10%, black 90%, transparent);">
+            <div class="marquee-track flex items-center gap-16 text-euclid-muted/50 font-display font-medium text-sm uppercase tracking-widest">
+                <span>Open Source</span><span class="text-white/10">|</span><span>Community Driven</span><span class="text-white/10">|</span><span>AOSP Based</span><span class="text-white/10">|</span><span>Privacy Focused</span><span class="text-white/10">|</span><span>Regular Updates</span><span class="text-white/10">|</span><span>Secure & Stable</span><span class="text-white/10">|</span>
+                <span>Open Source</span><span class="text-white/10">|</span><span>Community Driven</span><span class="text-white/10">|</span><span>AOSP Based</span><span class="text-white/10">|</span><span>Privacy Focused</span><span class="text-white/10">|</span><span>Regular Updates</span><span class="text-white/10">|</span><span>Secure & Stable</span><span class="text-white/10">|</span>
             </div>
         </div>
     </section>
 
-    <footer class="py-20 text-center border-t border-zinc-900">
-        <div class="text-euclid font-bold mb-4">EUCLIDOS</div>
-        <p class="text-gray-600 text-sm">&copy; 2026 EuclidOS Project. Not affiliated with Google LLC.</p>
+    <!-- ═══════════════════════════ ☆ ABOUT ☆ ═══════════════════════════ -->
+    <section id="about" class="relative py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid lg:grid-cols-2 gap-16 items-center">
+                <div class="reveal-section">
+                    <div class="inline-flex items-center gap-2 mb-4">
+                        <span class="w-8 h-[1px] bg-euclid"></span>
+                        <span class="text-sm font-display font-medium text-euclid/80 uppercase tracking-widest">About Us</span>
+                    </div>
+                    <h2 class="text-4xl md:text-6xl font-display font-bold mb-6 leading-tight">
+                        Our <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Mission</span>.
+                    </h2>
+                    <p class="text-lg text-euclid-muted leading-relaxed mb-8">
+                        EuclidOS aims to bring a balanced blend of performance, stability, and beauty to your device. We bridge the gap between stock Android purity and the customization enthusiasts crave, all without compromising on speed.
+                    </p>
+                    <div class="flex flex-col gap-4">
+                        <div class="flex items-start gap-4 reveal-section">
+                            <div class="w-10 h-10 rounded-lg bg-euclid/10 border border-euclid/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-euclid text-lg">&#9889;</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white mb-1">Purity Meets Power</h3>
+                                <p class="text-sm text-euclid-muted">Stock AOSP base with powerful enhancements.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 reveal-section">
+                            <div class="w-10 h-10 rounded-lg bg-euclid/10 border border-euclid/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-euclid text-lg">&#128736;</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white mb-1">Unmatched Stability</h3>
+                                <p class="text-sm text-euclid-muted">Built on a rock-solid AOSP foundation for daily reliability.</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start gap-4 reveal-section">
+                            <div class="w-10 h-10 rounded-lg bg-euclid/10 border border-euclid/20 flex items-center justify-center flex-shrink-0 mt-1">
+                                <span class="text-euclid text-lg">&#127912;</span>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-white mb-1">Beautiful Design</h3>
+                                <p class="text-sm text-euclid-muted">A modern, geometric aesthetic that is a joy to use.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative reveal-section">
+                    <div class="absolute -inset-4 bg-gradient-to-br from-euclid/20 to-cyan-500/10 rounded-[2.5rem] blur-2xl pointer-events-none"></div>
+                    <div class="glass-card rounded-[2rem] p-1 relative overflow-hidden">
+                        <img src="assets/screenshots/ss1.jpeg" alt="EuclidOS Interface" class="w-full h-auto rounded-[1.8rem] object-cover aspect-[9/16] md:aspect-square">
+                        <div class="absolute inset-0 bg-gradient-to-t from-euclid-dark/80 via-transparent to-transparent"></div>
+                        <div class="absolute bottom-6 left-6 right-6">
+                            <p class="text-sm font-mono text-euclid/80">v3.2 INTERFACE</p>
+                            <p class="text-xs text-gray-400 mt-1">Designed with purpose.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════ ☆ FEATURES ☆ ═══════════════════════════ -->
+    <section id="features" class="relative py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal-section">
+                <span class="px-3 py-1 rounded-full border border-euclid/30 bg-euclid/5 text-euclid text-xs font-medium uppercase tracking-widest mb-4 inline-block">What We Offer</span>
+                <h2 class="text-4xl md:text-6xl font-display font-bold mb-6 leading-tight">
+                    Core <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Features</span>.
+                </h2>
+                <p class="text-lg text-euclid-muted">A refined AOSP-based experience focusing on precision and speed.</p>
+            </div>
+            <div class="grid lg:grid-cols-3 gap-6 perspective-1000">
+                <div class="glass-card rounded-2xl p-8 reveal-section tilt-card hover:scale-[1.02] group relative overflow-hidden">
+                    <div class="glow-border"></div>
+                    <div class="mb-4 relative w-12 h-12 rounded-xl bg-gradient-to-br from-euclid/20 to-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl group-hover:rotate-[10deg] transition-transform duration-300">&#128640;</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Performance</h3>
+                    <p class="text-sm text-euclid-muted leading-relaxed">Optimized for speed and responsiveness. Every tap feels instant and fluid.</p>
+                    <div class="relative mt-4 w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="absolute top-0 left-0 h-full bg-gradient-to-r from-euclid to-cyan-400 rounded-full w-[90%]"></div></div>
+                </div>
+                <div class="glass-card rounded-2xl p-8 reveal-section tilt-card hover:scale-[1.02] group relative overflow-hidden" style="animation-delay: 0.1s;">
+                    <div class="glow-border"></div>
+                    <div class="mb-4 relative w-12 h-12 rounded-xl bg-gradient-to-br from-purple-500/20 to-euclid/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl group-hover:rotate-[10deg] transition-transform duration-300">&#127912;</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Customization</h3>
+                    <p class="text-sm text-euclid-muted leading-relaxed">Deep theming, icon packs, and UI tweaks that let you make it truly yours.</p>
+                    <div class="relative mt-4 w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="absolute top-0 left-0 h-full bg-gradient-to-r from-purple-500 to-euclid rounded-full w-[80%]"></div></div>
+                </div>
+                <div class="glass-card rounded-2xl p-8 reveal-section tilt-card hover:scale-[1.02] group relative overflow-hidden" style="animation-delay: 0.2s;">
+                    <div class="glow-border"></div>
+                    <div class="mb-4 relative w-12 h-12 rounded-xl bg-gradient-to-br from-green-500/20 to-cyan-500/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <span class="text-2xl group-hover:rotate-[10deg] transition-transform duration-300">&#128274;</span>
+                    </div>
+                    <h3 class="text-xl font-bold text-white mb-2">Security</h3>
+                    <p class="text-sm text-euclid-muted leading-relaxed">Regular security patches and privacy controls. Your data stays yours.</p>
+                    <div class="relative mt-4 w-full h-2 bg-white/5 rounded-full overflow-hidden"><div class="absolute top-0 left-0 h-full bg-gradient-to-r from-green-400 to-cyan-400 rounded-full w-[95%]"></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════ ☆ SCREENSHOTS ☆ ═══════════════════════════ -->
+    <section id="screenshots" class="relative py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal-section">
+                <span class="px-3 py-1 rounded-full border border-euclid/30 bg-euclid/5 text-euclid text-xs font-medium uppercase tracking-widest mb-4 inline-block">Visuals</span>
+                <h2 class="text-4xl md:text-6xl font-display font-bold mb-6 leading-tight">
+                    Euclidean <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Elegance</span>.
+                </h2>
+                <p class="text-lg text-euclid-muted">A deep dive into the EuclidOS v3.2 UI.</p>
+                <a href="screenshots.html" class="inline-flex items-center gap-2 mt-6 text-euclid font-medium hover:gap-4 transition-all duration-300">View Full Gallery <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg></a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="reveal-section lg:col-span-2 row-span-2"><div class="glass-card rounded-[2rem] overflow-hidden h-full group"><img src="assets/screenshots/ss1.jpeg" alt="Screenshot 1" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"><div class="absolute inset-0 bg-gradient-to-t from-euclid-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div></div></div>
+                <div class="reveal-section"><div class="glass-card rounded-[2rem] overflow-hidden group"><img src="assets/screenshots/ss2.jpeg" alt="Screenshot 2" class="w-full h-auto group-hover:scale-105 transition duration-700"></div></div>
+                <div class="reveal-section"><div class="glass-card rounded-[2rem] overflow-hidden group"><img src="assets/screenshots/ss3.jpeg" alt="Screenshot 3" class="w-full h-auto group-hover:scale-105 transition duration-700"></div></div>
+                <div class="reveal-section"><div class="glass-card rounded-[2rem] overflow-hidden group"><img src="assets/screenshots/ss4.jpeg" alt="Screenshot 4" class="w-full h-auto group-hover:scale-105 transition duration-700"></div></div>
+                <div class="reveal-section lg:col-span-2"><div class="glass-card rounded-[2rem] overflow-hidden h-full group"><img src="assets/screenshots/ss5.jpeg" alt="Screenshot 5" class="w-full h-full object-cover group-hover:scale-105 transition duration-700"><div class="absolute inset-0 bg-gradient-to-t from-euclid-dark/50 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div></div></div>
+                <div class="reveal-section"><div class="glass-card rounded-[2rem] overflow-hidden group"><img src="assets/screenshots/ss6.jpeg" alt="Screenshot 6" class="w-full h-auto group-hover:scale-105 transition duration-700"></div></div>
+                <div class="reveal-section"><div class="glass-card rounded-[2rem] overflow-hidden group"><img src="assets/screenshots/ss7.jpeg" alt="Screenshot 7" class="w-full h-auto group-hover:scale-105 transition duration-700"></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════ ☆ DEVICES ☆ ═══════════════════════════ -->
+    <section id="downloads" class="relative py-32 px-6">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-16 reveal-section">
+                <span class="px-3 py-1 rounded-full border border-euclid/30 bg-euclid/5 text-euclid text-xs font-medium uppercase tracking-widest mb-4 inline-block">Official Builds</span>
+                <h2 class="text-4xl md:text-6xl font-display font-bold mb-6 leading-tight">
+                    Our <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Lineup</span>.
+                </h2>
+                <p class="text-lg text-euclid-muted">Precision engineered for premium hardware.</p>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                <div class="glass-card rounded-[2.5rem] p-8 flex flex-col items-center text-center hover:border-euclid/30 transition duration-500 group reveal-section relative overflow-hidden">
+                    <div class="glow-border group-hover:opacity-60"></div>
+                    <div class="w-20 h-20 bg-gradient-to-br from-euclid/20 to-white/5 rounded-3xl flex items-center justify-center mb-6 border border-white/10 group-hover:border-euclid/30 transition-all duration-300 relative">
+                        <span class="text-4xl">&#128241;</span>
+                        <div class="absolute -top-2 -right-2 w-4 h-4 bg-green-400 rounded-full border-2 border-euclid-dark shadow-lg shadow-green-400/30"></div>
+                    </div>
+                    <h3 class="text-2xl font-bold text-white mb-2">Galaxy Note10+ 5G</h3>
+                    <p class="text-sm text-euclid-muted mb-6">Codename: d2x</p>
+                    <div class="w-full space-y-2 mb-8">
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">Version</span><span class="text-white font-mono">v3.2 (Baklava)</span></div>
+                        <div class="flex justify-between text-xs"><span class="text-gray-500">Maintainer</span><span class="text-white">MODEDGES</span></div>
+                        <div class="w-full bg-white/5 rounded-full h-1.5 mt-4"><div class="bg-gradient-to-r from-green-400 to-cyan-400 h-1.5 rounded-full w-full"></div></div>
+                    </div>
+                    <a href="downloads.html" class="w-full py-3.5 bg-gradient-to-r from-euclid to-blue-600 text-white font-bold rounded-2xl shadow-lg shadow-euclid/20 hover:shadow-euclid/40 hover:scale-[1.02] transition-all duration-300">Download Build</a>
+                </div>
+                <div class="glass-card rounded-[2.5rem] p-8 flex flex-col items-center text-center border-dashed border-white/10 group reveal-section">
+                    <div class="w-20 h-20 bg-white/5 rounded-3xl flex items-center justify-center mb-6 border border-dashed border-white/10 relative">
+                        <span class="text-4xl text-gray-600">&#128752;</span>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-500 mb-2">Expanding...</h3>
+                    <p class="text-sm text-gray-600 mb-4">Community Growing</p>
+                    <div class="w-full space-y-2 mb-8">
+                        <div class="flex justify-between text-xs text-gray-600"><span>Status</span><span>Testing</span></div>
+                        <div class="w-full bg-white/5 rounded-full h-1.5"><div class="bg-gray-700 h-1.5 rounded-full w-1/3 animate-pulse"></div></div>
+                    </div>
+                    <button class="w-full py-3.5 border border-white/10 text-gray-500 font-bold rounded-2xl cursor-not-allowed">Coming Soon</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════ ☆ CONTACT / CTA ☆ ═══════════════════════════ -->
+    <section id="contact" class="relative py-32 px-6">
+        <div class="max-w-5xl mx-auto text-center reveal-section">
+            <div class="glass-card rounded-[3rem] p-12 md:p-20 relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-euclid/10 via-transparent to-cyan-500/5 pointer-events-none"></div>
+                <div class="relative z-10">
+                    <h2 class="text-4xl md:text-6xl font-display font-bold mb-6 leading-tight">
+                        Ready to Experience<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">EuclidOS?</span>
+                    </h2>
+                    <p class="text-lg text-euclid-muted max-w-2xl mx-auto mb-10">
+                        Join the growing community of users who have made the switch. Download the latest build and transform your device today.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="downloads.html" class="magnetic-btn relative z-10 px-8 py-4 bg-euclid text-white font-bold rounded-full shadow-[0_0_30px_rgba(77,120,255,0.3)] hover:shadow-[0_0_50px_rgba(77,120,255,0.5)] transition duration-500 hover:-translate-y-1 w-full sm:w-auto">Download Now</a>
+                        <a href="#" class="px-8 py-4 border border-white/10 rounded-full font-medium text-white/80 hover:border-white/30 hover:bg-white/5 transition duration-300 w-full sm:w-auto">Join Telegram</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ═══════════════════════════ ☆ FOOTER ☆ ═══════════════════════════ -->
+    <footer class="relative py-20 px-6 border-t border-white/5">
+        <div class="max-w-7xl mx-auto">
+            <div class="grid md:grid-cols-4 gap-12 mb-16">
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-6">
+                        <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-10 h-10 rounded-xl border border-white/10">
+                        <span class="text-2xl font-display font-bold text-white">EUCLID<span class="text-euclid">OS</span></span>
+                    </div>
+                    <p class="text-sm text-euclid-muted max-w-sm leading-relaxed mb-6">Geometry in Motion. A refined AOSP-based operating system built for precision and performance.</p>
+                    <div class="flex gap-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition duration-300 hover:-translate-y-1"><span class="text-sm">T</span></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition duration-300 hover:-translate-y-1"><span class="text-sm">I</span></a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition duration-300 hover:-translate-y-1"><span class="text-sm">G</span></a>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-6 font-display">Navigation</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#about" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">About</a></li>
+                        <li><a href="#features" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Features</a></li>
+                        <li><a href="#screenshots" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Screenshots</a></li>
+                        <li><a href="#downloads" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Downloads</a></li>
+                        <li><a href="#contact" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold text-white mb-6 font-display">Resources</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">GitHub</a></li>
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Changelog</a></li>
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Documentation</a></li>
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Telegram Group</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 gap-4">
+                <p class="text-xs text-euclid-muted/50">&copy; 2026 EuclidOS Project. Not affiliated with Google LLC.</p>
+                <div class="flex gap-6">
+                    <a href="#" class="text-xs text-euclid-muted/50 hover:text-euclid-muted transition">Privacy Policy</a>
+                    <a href="#" class="text-xs text-euclid-muted/50 hover:text-euclid-muted transition">Terms of Use</a>
+                </div>
+            </div>
+        </div>
     </footer>
 
+    <!-- ═══════════════════════════ ☆ SCRIPTS ☆ ═══════════════════════════ -->
     <script>
-        const menuBtn = document.getElementById('menu-btn');
-        const closeBtn = document.getElementById('close-btn');
-        const drawer = document.getElementById('side-drawer');
+        // ─── Lenis Smooth Scroll ───
+        const lenis = new Lenis({
+            duration: 1.2,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 1,
+            touchMultiplier: 2,
+        });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
 
-        menuBtn.addEventListener('click', () => drawer.classList.add('open'));
-        closeBtn.addEventListener('click', () => drawer.classList.remove('open'));
-        
-        // Close drawer if clicking outside
-        document.addEventListener('click', (e) => {
-            if (!drawer.contains(e.target) && !menuBtn.contains(e.target)) {
-                drawer.classList.remove('open');
+        lenis.on('scroll', (e) => {
+            ScrollTrigger.update();
+            const progress = document.getElementById('scroll-progress');
+            if(progress) progress.style.width = (e.progress * 100).toFixed(2) + '%';
+        });
+
+        // ─── GSAP & ScrollTrigger ───
+        gsap.registerPlugin(ScrollTrigger);
+
+        // ─── Navbar & Scroll Logic ───
+        const navbar = document.getElementById('navbar');
+        const navGlass = document.getElementById('nav-glass');
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            if (currentScroll > 50) {
+                navGlass.classList.remove('opacity-0');
+                navGlass.classList.add('opacity-100');
+                navbar.style.transform = 'translateY(0)';
+            } else {
+                navGlass.classList.add('opacity-0');
+                navGlass.classList.remove('opacity-100');
             }
+            if (currentScroll > lastScroll && currentScroll > 100) {
+                navbar.style.transform = 'translateY(-100%)';
+            } else {
+                navbar.style.transform = 'translateY(0)';
+            }
+            lastScroll = currentScroll;
+        }, { passive: true });
+
+        setTimeout(() => { navbar.style.transform = 'translateY(0)'; }, 200);
+
+        // ─── Mobile Menu ───
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileDrawer = document.getElementById('mobile-drawer');
+        const drawerPanel = document.getElementById('drawer-panel');
+        const drawerBackdrop = document.getElementById('drawer-backdrop');
+        let isMenuOpen = false;
+
+        function toggleMenu() {
+            isMenuOpen = !isMenuOpen;
+            if (isMenuOpen) {
+                mobileDrawer.classList.remove('pointer-events-none', 'opacity-0');
+                mobileDrawer.classList.add('pointer-events-auto', 'opacity-100');
+                drawerPanel.style.transform = 'translateX(0)';
+                menuBtn.classList.add('ham-open');
+            } else {
+                mobileDrawer.classList.add('pointer-events-none', 'opacity-0');
+                mobileDrawer.classList.remove('pointer-events-auto', 'opacity-100');
+                drawerPanel.style.transform = 'translateX(100%)';
+                menuBtn.classList.remove('ham-open');
+            }
+        }
+
+        menuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+        drawerBackdrop.addEventListener('click', toggleMenu);
+        document.querySelectorAll('.drawer-link').forEach(link => {
+            link.addEventListener('click', toggleMenu);
+        });
+
+        // ─── Hero Entrance Animation ───
+        const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+        tl.to('#hero-badge', { opacity: 1, y: 0, duration: 0.8, delay: 0.2 })
+          .to('#hero-title', { opacity: 1, y: 0, duration: 1 }, "-=0.4")
+          .to('#hero-subtitle', { opacity: 1, y: 0, duration: 0.8 }, "-=0.6")
+          .to('#hero-cta', { opacity: 1, y: 0, duration: 0.8 }, "-=0.4")
+          .to('#hero-visual', { opacity: 1, y: 0, duration: 1 }, "-=0.6");
+
+        // ─── Parallax Effect Hero Visual ───
+        gsap.to('#hero-visual', {
+            y: -80,
+            scrollTrigger: {
+                trigger: '#hero',
+                start: 'top top',
+                end: 'bottom top',
+                scrub: 1,
+            }
+        });
+
+        // ─── Hero Glow Follows Mouse ───
+        const heroGlow = document.getElementById('hero-glow');
+        const hero = document.getElementById('hero');
+        hero.addEventListener('mousemove', (e) => {
+            const rect = hero.getBoundingClientRect();
+            const x = ((e.clientX - rect.left) / rect.width - 0.5) * 40;
+            const y = ((e.clientY - rect.top) / rect.height - 0.5) * 40;
+            if(heroGlow) gsap.to(heroGlow, { x, y, duration: 0.8, ease: "power2.out" });
+        });
+
+        // ─── Scroll Reveal ───
+        const revealElements = document.querySelectorAll('.reveal-section');
+        revealElements.forEach((el, i) => {
+            gsap.to(el, {
+                y: 0,
+                opacity: 1,
+                duration: 0.8,
+                ease: "power3.out",
+                scrollTrigger: {
+                    trigger: el,
+                    start: "top 85%",
+                    toggleActions: "play none none none"
+                }
+            });
+        });
+
+        // ─── 3D Tilt Cards ───
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(1000px) rotateY(${x * 10}deg) rotateX(${-y * 10}deg) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'perspective(1000px) rotateY(0) rotateX(0) scale(1)';
+            });
+        });
+
+        // ─── Custom Cursor ───
+        const dot = document.getElementById('cursor-dot');
+        const ring = document.getElementById('cursor-ring');
+        let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX; mouseY = e.clientY;
+            if(dot) { dot.style.left = e.clientX + 'px'; dot.style.top = e.clientY + 'px'; }
+        });
+
+        function animateCursor() {
+            if(window.innerWidth > 768 && ring) {
+                ringX += (mouseX - ringX) * 0.15;
+                ringY += (mouseY - ringY) * 0.15;
+                ring.style.left = ringX + 'px'; ring.style.top = ringY + 'px';
+            }
+            requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Scale ring on links/buttons
+        document.querySelectorAll('a, button, .magnetic-btn, .tilt-card').forEach(el => {
+            el.addEventListener('mouseenter', () => { if(ring) ring.style.transform = 'translate(-50%, -50%) scale(1.5)'; });
+            el.addEventListener('mouseleave', () => { if(ring) ring.style.transform = 'translate(-50%, -50%) scale(1)'; });
+        });
+
+        // ─── Smooth Scroll for Anchor Links ───
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if(targetId === '#') return;
+                const target = document.querySelector(targetId);
+                if(target) lenis.scrollTo(target, { offset: -80, duration: 1.5 });
+            });
         });
     </script>
 </body>
