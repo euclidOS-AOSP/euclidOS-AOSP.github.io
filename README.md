@@ -13,6 +13,9 @@ EuclidOS is an AOSP-based custom ROM focused on:
 *   **Source Code:** [https://github.com/euclidOS-AOSP/manifest]
 *   **Community:** .[https://t.me/euclidOSupdates]
 
+## Credits
+* @kaveer2009 for redesigning website ui
+  
 ## How to Contribute
 If you want to improve this website, feel free to open a Pull Request! 
 
