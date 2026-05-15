@@ -130,13 +130,37 @@
         }
         .nav-link:hover::after { width: 16px; }
 
-        .ham-line {
-            display: block; width: 22px; height: 1.5px;
-            background: white; border-radius: 2px;
-            transition: all 0.4s var(--ease-out); transform-origin: center;
+        /* ─── Hamburger Premium ─── */
+        .ham-btn {
+            width: 44px; height: 44px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 5px; position: relative;
+            border-radius: 12px; background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.4s var(--ease-out);
+            -webkit-tap-highlight-color: transparent; cursor: pointer;
         }
-        .ham-open .ham-line:first-child { transform: translateY(5.25px) rotate(45deg); }
-        .ham-open .ham-line:last-child { transform: translateY(-5.25px) rotate(-45deg); }
+        .ham-btn:active { transform: scale(0.92); }
+        .ham-btn .ham-line {
+            display: block; width: 20px; height: 1.5px;
+            background: white; border-radius: 4px;
+            transition: all 0.5s var(--ease-out);
+            transform-origin: center; position: absolute;
+        }
+        .ham-btn .ham-line:nth-child(1) { transform: translateY(-6px); }
+        .ham-btn .ham-line:nth-child(2) { transform: translateY(0); }
+        .ham-btn .ham-line:nth-child(3) { transform: translateY(6px); }
+        .ham-btn.ham-open .ham-line:nth-child(1) { transform: translateY(0) rotate(45deg); }
+        .ham-btn.ham-open .ham-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .ham-btn.ham-open .ham-line:nth-child(3) { transform: translateY(0) rotate(-45deg); }
+        .ham-btn.ham-open { background: rgba(77,120,255,0.12); border-color: rgba(77,120,255,0.25); }
+        .ham-btn .ham-glow {
+            position: absolute; inset: -4px; border-radius: 16px;
+            background: radial-gradient(circle, rgba(77,120,255,0.25), transparent 70%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
+        }
+        .ham-btn.ham-open .ham-glow { opacity: 1; }
 
         .tilt-card {
             transform-style: preserve-3d;
@@ -162,11 +186,75 @@
         }
         .magnetic-btn:hover::before { width: 300%; height: 300%; }
 
-        .drawer-link {
-            position: relative;
-            transition: color 0.3s, padding-left 0.3s var(--ease-out);
+        /* ─── Mobile Menu Overlay ─── */
+        .mobile-menu-overlay { position: fixed; inset: 0; pointer-events: none; }
+        .mobile-menu-overlay.active { pointer-events: auto; }
+        .menu-backdrop {
+            position: absolute; inset: 0;
+            background: rgba(2,2,8,0.7);
+            backdrop-filter: blur(12px) saturate(120%);
+            -webkit-backdrop-filter: blur(12px) saturate(120%);
+            opacity: 0; transition: opacity 0.5s var(--ease-out);
         }
-        .drawer-link:hover { padding-left: 12px; color: var(--clr-primary) !important; }
+        .mobile-menu-overlay.active .menu-backdrop { opacity: 1; }
+        .menu-panel {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 80px 32px 48px;
+            opacity: 0; transform: scale(0.96);
+            transition: all 0.5s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .menu-ambient {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); opacity: 0;
+            transition: opacity 0.8s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-ambient { opacity: 1; }
+        .menu-nav-item {
+            display: block; font-family: var(--font-display);
+            font-size: clamp(1.75rem, 6vw, 2.5rem); font-weight: 600;
+            color: rgba(255,255,255,0.35); padding: 12px 0;
+            text-decoration: none; position: relative;
+            opacity: 0; transform: translateY(20px);
+            transition: color 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-nav-item:hover, .menu-nav-item:active { color: white; }
+        .menu-nav-item::after {
+            content: ''; position: absolute; left: 0; bottom: 4px;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            border-radius: 2px; transition: width 0.4s var(--ease-out);
+            box-shadow: 0 0 8px var(--clr-primary);
+        }
+        .menu-nav-item:hover::after, .menu-nav-item:active::after { width: 100%; }
+        .menu-nav-item .item-index {
+            display: inline-block; font-size: 10px; font-family: var(--font-base);
+            font-weight: 500; color: var(--clr-primary);
+            margin-right: 12px; min-width: 20px; letter-spacing: 0.05em;
+        }
+        .menu-nav-item .item-arrow {
+            display: inline-block; margin-left: 12px;
+            opacity: 0; transform: translateX(-8px);
+            transition: all 0.3s var(--ease-out);
+        }
+        .menu-nav-item:hover .item-arrow { opacity: 0.5; transform: translateX(0); }
+        .menu-cta-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 36px; background: var(--clr-primary);
+            color: white; font-weight: 600; font-size: 15px;
+            border-radius: 9999px; text-decoration: none;
+            position: relative; overflow: hidden;
+            opacity: 0; transform: translateY(20px);
+            box-shadow: 0 0 30px rgba(77,120,255,0.25);
+            transition: transform 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-cta-btn:active { transform: scale(0.96) translateY(0); }
+        .menu-footer { opacity: 0; transform: translateY(10px); }
+        .menu-footer a { color: rgba(255,255,255,0.25); transition: color 0.3s; -webkit-tap-highlight-color: transparent; }
+        .menu-footer a:hover { color: var(--clr-primary); }
 
         ::selection { background: rgba(77, 120, 255, 0.3); color: white; }
     </style>
@@ -198,26 +286,28 @@
                 <a href="downloads.html" class="nav-link !text-white !bg-white/[0.08]">Downloads</a>
                 <a href="screenshots.html" class="nav-link">Screenshots</a>
             </div>
-            <button id="menu-btn" class="md:hidden p-2 flex flex-col gap-[5px] z-[101]" aria-label="Toggle menu">
+            <button id="menu-btn" class="ham-btn md:hidden z-[101]" aria-label="Toggle menu">
+                <span class="ham-glow"></span>
+                <span class="ham-line"></span>
                 <span class="ham-line"></span>
                 <span class="ham-line"></span>
             </button>
         </div>
     </nav>
 
-    <!-- Mobile Drawer -->
-    <div id="mobile-drawer" class="fixed inset-0 z-[99] pointer-events-none opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-md" id="drawer-backdrop"></div>
-        <div class="absolute top-0 right-0 h-full w-[85vw] max-w-[320px] bg-[#08080f]/95 backdrop-blur-2xl border-l border-white/[0.06] transform translate-x-full transition-transform duration-500 flex flex-col" id="drawer-panel">
-            <div class="p-7 flex flex-col gap-0.5 flex-grow">
-                <div class="text-[10px] font-display text-gray-600 uppercase tracking-[0.2em] mb-5 pointer-events-none">Navigation</div>
-                <a href="index.html" class="drawer-link py-3 text-lg font-display font-medium text-gray-300 hover:text-euclid transition">Home</a>
-                <a href="downloads.html" class="drawer-link py-3 text-lg font-display font-medium text-euclid transition">Downloads</a>
-                <a href="screenshots.html" class="drawer-link py-3 text-lg font-display font-medium text-gray-300 hover:text-euclid transition">Screenshots</a>
-            </div>
-            <div class="p-7 border-t border-white/[0.04]">
-                <a href="downloads.html" class="block w-full py-3.5 bg-euclid text-white text-center font-bold rounded-xl hover:bg-euclid/90 transition shadow-lg shadow-euclid/20">Get EuclidOS</a>
-            </div>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="mobile-menu-overlay" style="z-index: 99;">
+        <div class="menu-backdrop" id="menu-backdrop"></div>
+        <div class="menu-ambient" style="width: 300px; height: 300px; background: rgba(77,120,255,0.15); top: 10%; left: -10%;"></div>
+        <div class="menu-ambient" style="width: 250px; height: 250px; background: rgba(0,240,255,0.08); bottom: 15%; right: -5%;"></div>
+        <div class="menu-panel">
+            <nav class="flex flex-col items-center text-center mb-12">
+                <a href="index.html" class="menu-nav-item" data-index="0"><span class="item-index">01</span>Home<span class="item-arrow">&rarr;</span></a>
+                <a href="index.html#features" class="menu-nav-item" data-index="1"><span class="item-index">02</span>Features<span class="item-arrow">&rarr;</span></a>
+                <a href="screenshots.html" class="menu-nav-item" data-index="2"><span class="item-index">03</span>Screenshots<span class="item-arrow">&rarr;</span></a>
+                <a href="downloads.html" class="menu-nav-item" data-index="3"><span class="item-index">04</span>Downloads<span class="item-arrow">&rarr;</span></a>
+            </nav>
+            <a href="downloads.html" class="menu-cta-btn">Get EuclidOS</a>
         </div>
     </div>
 
@@ -424,31 +514,51 @@
 
         // Mobile Menu
         const menuBtn = document.getElementById('menu-btn');
-        const mobileDrawer = document.getElementById('mobile-drawer');
-        const drawerPanel = document.getElementById('drawer-panel');
-        const drawerBackdrop = document.getElementById('drawer-backdrop');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuBackdrop = document.getElementById('menu-backdrop');
+        const menuNavItems = document.querySelectorAll('.menu-nav-item');
+        const menuCtaBtn = document.querySelector('.menu-cta-btn');
         let isMenuOpen = false;
+        let menuTL = null;
 
-        function toggleMenu() {
-            isMenuOpen = !isMenuOpen;
-            if (isMenuOpen) {
-                mobileDrawer.classList.remove('pointer-events-none', 'opacity-0');
-                mobileDrawer.classList.add('pointer-events-auto', 'opacity-100');
-                drawerPanel.style.transform = 'translateX(0)';
-                menuBtn.classList.add('ham-open');
-                lenis.stop();
-            } else {
-                mobileDrawer.classList.add('pointer-events-none', 'opacity-0');
-                mobileDrawer.classList.remove('pointer-events-auto', 'opacity-100');
-                drawerPanel.style.transform = 'translateX(100%)';
-                menuBtn.classList.remove('ham-open');
-                lenis.start();
-            }
+        function openMenu() {
+            isMenuOpen = true;
+            menuBtn.classList.add('ham-open');
+            mobileMenu.classList.add('active');
+            lenis.stop();
+            menuTL = gsap.timeline({ defaults: { ease: "power3.out" } });
+            menuTL.to(menuNavItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, delay: 0.15 })
+                  .to(menuCtaBtn, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25");
         }
+
+        function closeMenu() {
+            isMenuOpen = false;
+            menuBtn.classList.remove('ham-open');
+            if (menuTL) menuTL.kill();
+            gsap.to([menuNavItems, menuCtaBtn], {
+                opacity: 0, y: 10, duration: 0.2, stagger: 0.02, ease: "power2.in",
+                onComplete: () => {
+                    mobileMenu.classList.remove('active');
+                    gsap.set(menuNavItems, { opacity: 0, y: 20 });
+                    gsap.set(menuCtaBtn, { opacity: 0, y: 20 });
+                }
+            });
+            lenis.start();
+        }
+
+        function toggleMenu() { isMenuOpen ? closeMenu() : openMenu(); }
+
         menuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
-        drawerBackdrop.addEventListener('click', toggleMenu);
-        document.querySelectorAll('.drawer-link').forEach(link => {
-            link.addEventListener('click', () => { setTimeout(toggleMenu, 150); });
+        menuBackdrop.addEventListener('click', closeMenu);
+        menuNavItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = item.getAttribute('href');
+                closeMenu();
+                if (href && !href.startsWith('#')) {
+                    setTimeout(() => { window.location.href = href; }, 350);
+                }
+            });
         });
 
         // Scroll Reveal
