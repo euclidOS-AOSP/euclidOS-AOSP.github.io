@@ -4,406 +4,597 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Downloads | EuclidOS</title>
+    <meta name="description" content="Download the latest EuclidOS builds. Precision engineered for premium hardware.">
     <link rel="icon" type="image/jpeg" href="assets/screenshots/logo.jpeg">
-
-    <!-- Fonts: Inter & Space Grotesk -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- GSAP Animation Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-    
-    <!-- Lenis Smooth Scroll -->
     <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
-
-    <!-- Custom Styles -->
-    <style>
-        :root {
-            --clr-primary: #4d78ff;
-            --bg-main: #03030a;
-            --bg-card: rgba(12, 12, 24, 0.6);
-            --glass-border: rgba(255, 255, 255, 0.08);
-            --glow: #9ea8ff;
-            --accent-cyan: #00f0ff;
-            --neon-blue: #0066ff;
-            --text-main: #f0f0f5;
-            --text-muted: #8888a0;
-            --font-base: 'Inter', sans-serif;
-            --font-display: 'Space Grotesk', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            font-family: var(--font-base);
-            overflow-x: hidden;
-            -webkit-font-smoothing: antialiased;
-        }
-
-        /* Scrollbar */
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.25); }
-
-        /* Noise Overlay */
-        #noise-overlay {
-            position: fixed;
-            inset: 0;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.03;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-        }
-
-        /* Scroll Progress Bar */
-        #scroll-progress {
-            position: fixed;
-            top: 0;
-            left: 0;
-            height: 2px;
-            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
-            z-index: 10001;
-            width: 0%;
-            box-shadow: 0 0 10px var(--clr-primary);
-        }
-
-        /* Glass Utilities */
-        .glass {
-            background: rgba(12, 12, 24, 0.5);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border: 1px solid var(--glass-border);
-        }
-        
-        .glass-card {
-            background: rgba(20, 20, 35, 0.4);
-            backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
-            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-        }
-
-        .glass-card:hover {
-            border-color: rgba(255, 255, 255, 0.15);
-            box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 30px var(--clr-primary-dim), inset 0 1px 0 rgba(255,255,255,0.1);
-            transform: translateY(-6px);
-        }
-
-        /* Ambient Background */
-        #ambient-bg {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: 0; pointer-events: none; overflow: hidden;
-        }
-        .ambient-blob {
-            position: absolute; border-radius: 50%; filter: blur(100px); opacity: 0.35;
-            animation: ambientFloat 20s ease-in-out infinite alternate;
-        }
-        @keyframes ambientFloat {
-            0%   { transform: translate(0, 0) scale(1); }
-            33%  { transform: translate(30px, -50px) scale(1.1); }
-            66%  { transform: translate(-20px, 30px) scale(0.9); }
-            100% { transform: translate(50px, -20px) scale(1); }
-        }
-
-        /* Layout Animation */
-        .reveal-section { opacity: 0; transform: translateY(40px); }
-
-        /* Link Underline */
-        .link-hover { position: relative; }
-        .link-hover::after {
-            content: ''; position: absolute; bottom: -2px; left: 0;
-            width: 0; height: 1px; background: var(--clr-primary); transition: width 0.3s;
-        }
-        .link-hover:hover::after { width: 100%; }
-    </style>
-
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: { euclid: '#4d78ff', 'euclid-dark': '#03030a', 'euclid-muted': '#8888a0' },
-                    fontFamily: { sans: ['Inter', 'sans-serif'], display: ['Space Grotesk', 'sans-serif'] }
+                    colors: {
+                        euclid: '#4d78ff',
+                        'euclid-dark': '#03030a',
+                        'euclid-muted': '#8888a0',
+                        'euclid-dim': 'rgba(77, 120, 255, 0.1)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
                 }
             }
         }
     </script>
-</head>
-<body class="dark-theme" style="background: linear-gradient(180deg, #020208 0%, #07070f 50%, #0a0a14 100%);">
+    <style>
+        :root {
+            --clr-primary: #4d78ff;
+            --clr-primary-dim: rgba(77, 120, 255, 0.1);
+            --bg-main: #03030a;
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border-hover: rgba(255, 255, 255, 0.12);
+            --glow: #9ea8ff;
+            --accent-cyan: #00f0ff;
+            --text-muted: #8888a0;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        }
 
-    <!-- Ambient Background -->
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-main);
+            color: #f0f0f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+
+        #noise-overlay {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 9999;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+
+        #scroll-progress {
+            position: fixed; top: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            z-index: 10001; width: 0%;
+            box-shadow: 0 0 12px var(--clr-primary);
+        }
+
+        .glass {
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+        .glass-card {
+            background: rgba(16, 16, 30, 0.5);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+            transition: all 0.5s var(--ease-out);
+        }
+        .glass-card:hover {
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 40px var(--clr-primary-dim), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+        }
+
+        #ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .ambient-blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(120px); opacity: 0.3;
+            animation: ambientFloat 25s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+        @keyframes ambientFloat {
+            0%   { transform: translate(0, 0) scale(1); }
+            25%  { transform: translate(40px, -60px) scale(1.05); }
+            50%  { transform: translate(-30px, 40px) scale(0.95); }
+            75%  { transform: translate(20px, -30px) scale(1.08); }
+            100% { transform: translate(-20px, 20px) scale(1); }
+        }
+
+        .reveal-section { opacity: 0; transform: translateY(30px); }
+
+        #navbar { transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out); will-change: transform; }
+        #nav-glass { transition: opacity 0.4s var(--ease-out); }
+        .nav-link {
+            position: relative; padding: 8px 16px;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            border-radius: 9999px;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        .nav-link:hover { color: #fff; background-color: rgba(255,255,255,0.08); }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 1px; background: var(--clr-primary);
+            transition: width 0.3s var(--ease-out);
+        }
+        .nav-link:hover::after { width: 16px; }
+
+        /* ─── Hamburger Premium ─── */
+        .ham-btn {
+            width: 44px; height: 44px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 5px; position: relative;
+            border-radius: 12px; background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.4s var(--ease-out);
+            -webkit-tap-highlight-color: transparent; cursor: pointer;
+        }
+        .ham-btn:active { transform: scale(0.92); }
+        .ham-btn .ham-line {
+            display: block; width: 20px; height: 1.5px;
+            background: white; border-radius: 4px;
+            transition: all 0.5s var(--ease-out);
+            transform-origin: center; position: absolute;
+        }
+        .ham-btn .ham-line:nth-child(1) { transform: translateY(-6px); }
+        .ham-btn .ham-line:nth-child(2) { transform: translateY(0); }
+        .ham-btn .ham-line:nth-child(3) { transform: translateY(6px); }
+        .ham-btn.ham-open .ham-line:nth-child(1) { transform: translateY(0) rotate(45deg); }
+        .ham-btn.ham-open .ham-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .ham-btn.ham-open .ham-line:nth-child(3) { transform: translateY(0) rotate(-45deg); }
+        .ham-btn.ham-open { background: rgba(77,120,255,0.12); border-color: rgba(77,120,255,0.25); }
+        .ham-btn .ham-glow {
+            position: absolute; inset: -4px; border-radius: 16px;
+            background: radial-gradient(circle, rgba(77,120,255,0.25), transparent 70%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
+        }
+        .ham-btn.ham-open .ham-glow { opacity: 1; }
+
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.15s linear;
+            will-change: transform;
+        }
+        .tilt-card .glow-border {
+            position: absolute; inset: -1px; border-radius: inherit;
+            background: conic-gradient(from 0deg, transparent, 60%, var(--clr-primary), transparent);
+            opacity: 0; transition: opacity 0.6s var(--ease-out); z-index: -1;
+        }
+        .tilt-card:hover .glow-border { opacity: 0.5; }
+
+        .magnetic-btn {
+            position: relative; overflow: hidden;
+            transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+        }
+        .magnetic-btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 0; height: 0; border-radius: 50%;
+            background: rgba(255,255,255,0.15); transform: translate(-50%, -50%);
+            transition: width 0.6s var(--ease-out), height 0.6s var(--ease-out);
+        }
+        .magnetic-btn:hover::before { width: 300%; height: 300%; }
+
+        /* ─── Mobile Menu Overlay ─── */
+        .mobile-menu-overlay { position: fixed; inset: 0; pointer-events: none; }
+        .mobile-menu-overlay.active { pointer-events: auto; }
+        .menu-backdrop {
+            position: absolute; inset: 0;
+            background: rgba(2,2,8,0.7);
+            backdrop-filter: blur(12px) saturate(120%);
+            -webkit-backdrop-filter: blur(12px) saturate(120%);
+            opacity: 0; transition: opacity 0.5s var(--ease-out);
+        }
+        .mobile-menu-overlay.active .menu-backdrop { opacity: 1; }
+        .menu-panel {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 80px 32px 48px;
+            opacity: 0; transform: scale(0.96);
+            transition: all 0.5s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .menu-ambient {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); opacity: 0;
+            transition: opacity 0.8s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-ambient { opacity: 1; }
+        .menu-nav-item {
+            display: block; font-family: var(--font-display);
+            font-size: clamp(1.75rem, 6vw, 2.5rem); font-weight: 600;
+            color: rgba(255,255,255,0.35); padding: 12px 0;
+            text-decoration: none; position: relative;
+            opacity: 0; transform: translateY(20px);
+            transition: color 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-nav-item:hover, .menu-nav-item:active { color: white; }
+        .menu-nav-item::after {
+            content: ''; position: absolute; left: 0; bottom: 4px;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            border-radius: 2px; transition: width 0.4s var(--ease-out);
+            box-shadow: 0 0 8px var(--clr-primary);
+        }
+        .menu-nav-item:hover::after, .menu-nav-item:active::after { width: 100%; }
+        .menu-nav-item .item-index {
+            display: inline-block; font-size: 10px; font-family: var(--font-base);
+            font-weight: 500; color: var(--clr-primary);
+            margin-right: 12px; min-width: 20px; letter-spacing: 0.05em;
+        }
+        .menu-nav-item .item-arrow {
+            display: inline-block; margin-left: 12px;
+            opacity: 0; transform: translateX(-8px);
+            transition: all 0.3s var(--ease-out);
+        }
+        .menu-nav-item:hover .item-arrow { opacity: 0.5; transform: translateX(0); }
+        .menu-cta-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 36px; background: var(--clr-primary);
+            color: white; font-weight: 600; font-size: 15px;
+            border-radius: 9999px; text-decoration: none;
+            position: relative; overflow: hidden;
+            opacity: 0; transform: translateY(20px);
+            box-shadow: 0 0 30px rgba(77,120,255,0.25);
+            transition: transform 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-cta-btn:active { transform: scale(0.96) translateY(0); }
+        .menu-footer { opacity: 0; transform: translateY(10px); }
+        .menu-footer a { color: rgba(255,255,255,0.25); transition: color 0.3s; -webkit-tap-highlight-color: transparent; }
+        .menu-footer a:hover { color: var(--clr-primary); }
+
+        ::selection { background: rgba(77, 120, 255, 0.3); color: white; }
+    </style>
+</head>
+<body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
+
     <div id="ambient-bg">
-        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, #4d78ff 0%, transparent 70%); top: -200px; left: -100px; animation-delay: 0s;"></div>
-        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, #6c5ce7 0%, transparent 70%); top: 20%; right: -200px; animation-delay: -5s;"></div>
-        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, #007bff 0%, transparent 70%); top: 50%; left: -150px; animation-delay: -10s;"></div>
+        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(77,120,255,0.4) 0%, transparent 70%); top: -200px; left: -100px;"></div>
+        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(108,92,231,0.3) 0%, transparent 70%); top: 30%; right: -200px; animation-delay: -8s;"></div>
+        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,123,255,0.25) 0%, transparent 70%); top: 60%; left: -100px; animation-delay: -14s;"></div>
     </div>
 
-    <!-- Noise Texture -->
     <div id="noise-overlay"></div>
-
-    <!-- Scroll Progress -->
     <div id="scroll-progress"></div>
 
-    <!-- ═══════════════════════════ ☆ NAVIGATION ☆ ═══════════════════════════ -->
-    <nav id="navbar" class="fixed top-0 left-0 w-full z-[100]" style="transform: translateY(-100%);">
-        <div class="absolute inset-0 glass opacity-0" id="nav-glass"></div>
-        <div class="relative max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-            <a href="index.html" class="flex items-center gap-3">
-                <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-10 h-10 rounded-xl border border-white/10">
-                <span class="text-2xl font-display font-bold text-white">EUCLID<span class="text-euclid">OS</span></span>
+    <!-- ═══════════════ NAVIGATION ═══════════════ -->
+    <nav id="navbar" class="fixed top-0 left-0 w-full z-[100]">
+        <div class="absolute inset-0 glass transition-opacity duration-500" id="nav-glass" style="opacity: 0;"></div>
+        <div class="relative max-w-7xl mx-auto px-5 md:px-6 py-3 md:py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2.5 group">
+                <div class="relative w-9 h-9 md:w-10 md:h-10 flex-shrink-0">
+                    <img src="assets/screenshots/logo.jpeg" alt="EuclidOS Logo" class="w-full h-full rounded-lg border border-white/10 group-hover:border-euclid/40 transition duration-300">
+                    <div class="absolute inset-0 rounded-lg bg-euclid/20 blur-lg opacity-0 group-hover:opacity-100 transition duration-500"></div>
+                </div>
+                <span class="text-lg md:text-xl font-display font-bold text-white tracking-tight">EUCLID<span class="text-euclid">OS</span></span>
             </a>
-            <div class="hidden md:flex items-center gap-1 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1 border border-white/10">
-                <a href="index.html" class="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white hover:bg-white/10 rounded-full transition">Home</a>
-                <a href="downloads.html" class="px-4 py-2 text-sm font-medium text-white bg-white/10 rounded-full transition">Downloads</a>
+            <div class="hidden md:flex items-center gap-1 bg-white/[0.04] backdrop-blur-xl rounded-full px-1.5 py-1 border border-white/[0.06]">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="downloads.html" class="nav-link !text-white !bg-white/[0.08]">Downloads</a>
+                <a href="screenshots.html" class="nav-link">Screenshots</a>
             </div>
-            <button id="menu-btn" class="md:hidden p-2 flex flex-col gap-1.5 z-[101]">
-                <span id="ham-top" class="block w-6 h-[1.5px] bg-white transition-transform origin-center"></span>
-                <span id="ham-mid" class="block w-6 h-[1.5px] bg-white transition-opacity opacity-100"></span>
-                <span id="ham-bot" class="block w-6 h-[1.5px] bg-white transition-transform origin-center"></span>
+            <button id="menu-btn" class="ham-btn md:hidden z-[101]" aria-label="Toggle menu">
+                <span class="ham-glow"></span>
+                <span class="ham-line"></span>
+                <span class="ham-line"></span>
+                <span class="ham-line"></span>
             </button>
         </div>
     </nav>
 
-    <!-- ─── Mobile Drawer ─── -->
-    <div id="mobile-drawer" class="fixed inset-0 z-[99] pointer-events-none opacity-0 transition-opacity duration-300">
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" id="drawer-backdrop"></div>
-        <div class="absolute top-0 right-0 h-full w-80 bg-euclid-dark/95 backdrop-blur-2xl border-l border-white/10 transform translate-x-full transition-transform duration-500 ease-out flex flex-col" id="drawer-panel">
-            <div class="p-8 flex flex-col gap-1 flex-grow">
-                <div class="text-xs font-display text-gray-500 uppercase tracking-widest mb-6">Navigation</div>
-                <a href="index.html" class="py-3 text-xl font-display font-medium text-gray-300 hover:text-euclid transition">Home</a>
-                <a href="downloads.html" class="py-3 text-xl font-display font-medium text-euclid transition">Downloads</a>
-            </div>
-            <div class="p-8 border-t border-white/5">
-                <a href="index.html#contact" class="block w-full py-4 bg-euclid text-white text-center font-bold rounded-2xl hover:bg-euclid/90 transition shadow-lg shadow-euclid/20">Get EuclidOS</a>
-            </div>
+    <!-- Mobile Menu Overlay -->
+    <div id="mobile-menu" class="mobile-menu-overlay" style="z-index: 99;">
+        <div class="menu-backdrop" id="menu-backdrop"></div>
+        <div class="menu-ambient" style="width: 300px; height: 300px; background: rgba(77,120,255,0.15); top: 10%; left: -10%;"></div>
+        <div class="menu-ambient" style="width: 250px; height: 250px; background: rgba(0,240,255,0.08); bottom: 15%; right: -5%;"></div>
+        <div class="menu-panel">
+            <nav class="flex flex-col items-center text-center mb-12">
+                <a href="index.html" class="menu-nav-item" data-index="0"><span class="item-index">01</span>Home<span class="item-arrow">&rarr;</span></a>
+                <a href="index.html#features" class="menu-nav-item" data-index="1"><span class="item-index">02</span>Features<span class="item-arrow">&rarr;</span></a>
+                <a href="screenshots.html" class="menu-nav-item" data-index="2"><span class="item-index">03</span>Screenshots<span class="item-arrow">&rarr;</span></a>
+                <a href="downloads.html" class="menu-nav-item" data-index="3"><span class="item-index">04</span>Downloads<span class="item-arrow">&rarr;</span></a>
+            </nav>
+            <a href="downloads.html" class="menu-cta-btn">Get EuclidOS</a>
         </div>
     </div>
 
-    <!-- ═══════════════════════════ ☆ HERO ☆ ═══════════════════════════ -->
+    <!-- ═══════════════ HERO ═══════════════ -->
     <header class="relative pt-32 pb-20 px-6 text-center overflow-hidden">
         <div class="absolute inset-0 z-0">
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-euclid/15 rounded-full blur-[100px] pointer-events-none"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-euclid/10 rounded-full blur-[120px] pointer-events-none"></div>
         </div>
-        <div class="relative z-10 max-w-4xl mx-auto">
-            <div class="inline-flex items-center gap-2 bg-white/5 border border-white/10 rounded-full px-4 py-2 mb-8 reveal-section">
-                <span class="w-2 h-2 bg-euclid rounded-full animate-pulse shadow-lg shadow-euclid/50"></span>
-                <span class="text-sm text-gray-300 font-medium">EXCLUSIVE BUILDS</span>
+        <div class="relative z-10 max-w-3xl mx-auto">
+            <div class="inline-flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-2 mb-8 reveal-section">
+                <span class="relative flex h-2.5 w-2.5">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
+                </span>
+                <span class="text-sm text-gray-300 font-medium tracking-wide">EXCLUSIVE BUILDS</span>
             </div>
-            <h1 class="text-5xl md:text-7xl font-display font-bold mb-6 reveal-section leading-tight">
+            <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 reveal-section leading-[1.05]">
                 Official <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Builds.</span>
             </h1>
-            <p class="text-lg md:text-xl text-euclid-muted max-w-2xl mx-auto mb-10 reveal-section leading-relaxed">
+            <p class="text-base md:text-lg text-euclid-muted max-w-xl mx-auto mb-10 reveal-section leading-relaxed">
                 Select your device to download the latest EuclidOS v3.2 "Baklava" release. Engineered with precision for peak performance.
             </p>
-            <div class="flex flex-wrap justify-center gap-3 reveal-section">
-                <span class="px-3 py-1 rounded-full text-xs font-medium border border-euclid/50 text-euclid bg-euclid/10 backdrop-blur-sm">Fast</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium border border-green-400/50 text-green-400 bg-green-400/10 backdrop-blur-sm">Stable</span>
-                <span class="px-3 py-1 rounded-full text-xs font-medium border border-cyan-400/50 text-cyan-400 bg-cyan-400/10 backdrop-blur-sm">Secure</span>
+            <div class="flex flex-wrap justify-center gap-2.5 reveal-section">
+                <span class="px-3 py-1 rounded-full text-xs font-medium border border-euclid/40 text-euclid bg-euclid/[0.08] backdrop-blur-sm">Fast</span>
+                <span class="px-3 py-1 rounded-full text-xs font-medium border border-green-400/40 text-green-400 bg-green-400/[0.08] backdrop-blur-sm">Stable</span>
+                <span class="px-3 py-1 rounded-full text-xs font-medium border border-cyan-400/40 text-cyan-400 bg-cyan-400/[0.08] backdrop-blur-sm">Secure</span>
             </div>
         </div>
     </header>
 
-    <!-- ═══════════════════════════ ☆ BUILDS ☆ ═══════════════════════════ -->
+    <!-- ═══════════════ BUILDS ═══════════════ -->
     <main class="max-w-7xl mx-auto px-6 pb-20 relative z-10">
-        <div class="grid lg:grid-cols-3 gap-8 mb-16">
+        <div class="grid lg:grid-cols-3 gap-5 mb-14">
             <!-- Primary Device -->
-            <div class="lg:col-span-2 glass-card rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group reveal-section">
-                <div class="absolute -top-20 -right-20 w-60 h-60 bg-euclid/10 rounded-full blur-[80px] pointer-events-none group-hover:opacity-80 transition duration-700"></div>
-                <div class="absolute top-6 right-6">
-                    <span class="px-4 py-2 rounded-full text-xs font-bold border border-green-500/50 text-green-400 bg-green-500/10 backdrop-blur-sm flex items-center gap-2">
-                        <span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span> Stable
+            <div class="lg:col-span-2 glass-card rounded-[2rem] p-7 md:p-10 relative overflow-hidden group reveal-section tilt-card">
+                <div class="glow-border group-hover:opacity-50"></div>
+                <div class="absolute -top-20 -right-20 w-56 h-56 bg-euclid/[0.07] rounded-full blur-[80px] pointer-events-none group-hover:opacity-80 transition-opacity duration-700"></div>
+                <div class="absolute top-5 right-5">
+                    <span class="px-3 py-1.5 rounded-full text-[10px] font-bold border border-green-500/40 text-green-400 bg-green-500/[0.08] backdrop-blur-sm flex items-center gap-1.5">
+                        <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> Stable
                     </span>
                 </div>
                 <div class="flex flex-col md:flex-row md:items-center gap-6 md:gap-8 relative">
                     <div class="flex-shrink-0">
-                        <div class="w-24 h-24 md:w-32 md:h-32 bg-gradient-to-br from-euclid/20 to-blue-500/10 rounded-[2rem] flex items-center justify-center border border-euclid/20 group-hover:border-euclid/40 transition-all duration-300 relative">
-                            <span class="text-5xl md:text-6xl">&#128241;</span>
-                            <div class="absolute -top-2 -right-2 w-6 h-6 bg-green-400 border-4 border-[#07070f] rounded-full shadow-lg shadow-green-400/30"></div>
+                        <div class="w-20 h-20 md:w-28 md:h-28 bg-gradient-to-br from-euclid/15 to-blue-500/[0.08] rounded-2xl flex items-center justify-center border border-euclid/15 group-hover:border-euclid/30 transition-all duration-300 relative">
+                            <span class="text-4xl md:text-5xl">&#128241;</span>
+                            <div class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-green-400 border-[3px] border-[#07070f] rounded-full shadow-lg shadow-green-400/30"></div>
                         </div>
                     </div>
                     <div class="flex-1">
-                        <h2 class="text-3xl md:text-4xl font-display font-bold mb-2">Galaxy Note10+ 5G</h2>
-                        <p class="text-euclid-muted mb-4 flex items-center gap-2">
-                            <span class="px-2 py-0.5 bg-white/5 rounded text-xs font-mono text-gray-400 border border-white/10">d2x</span>
+                        <h2 class="text-2xl md:text-3xl font-display font-bold mb-2">Galaxy Note10+ 5G</h2>
+                        <p class="text-euclid-muted mb-4">
+                            <span class="px-2 py-0.5 bg-white/[0.04] rounded text-xs font-mono text-gray-400 border border-white/[0.06]">d2x</span>
                         </p>
-                        <div class="space-y-3 mb-8">
-                            <div class="flex items-center justify-between text-sm py-2 border-b border-white/5">
-                                <span class="text-gray-500">Version</span><span class="font-medium text-white font-mono">v3.2 (Baklava)</span>
+                        <div class="space-y-2.5 mb-7">
+                            <div class="flex items-center justify-between text-sm py-2 border-b border-white/[0.04]">
+                                <span class="text-gray-500">Version</span><span class="font-medium text-white/90 font-mono text-xs">v3.2 (Baklava)</span>
                             </div>
-                            <div class="flex items-center justify-between text-sm py-2 border-b border-white/5">
-                                <span class="text-gray-500">Maintainer</span><span class="font-medium text-white">MODEDGES</span>
+                            <div class="flex items-center justify-between text-sm py-2 border-b border-white/[0.04]">
+                                <span class="text-gray-500">Maintainer</span><span class="font-medium text-white/90">MODEDGES</span>
                             </div>
-                            <div class="flex items-center justify-between text-sm py-2 border-b border-white/5">
-                                <span class="text-gray-500">Compatibility</span><span class="font-medium text-white">Galaxy Note10+ 5G</span>
+                            <div class="flex items-center justify-between text-sm py-2 border-b border-white/[0.04]">
+                                <span class="text-gray-500">Compatibility</span><span class="font-medium text-white/90">Galaxy Note10+ 5G</span>
                             </div>
                             <div class="flex items-center justify-between text-sm py-2">
-                                <span class="text-gray-500">Update</span><span class="font-medium text-white">April 2026</span>
+                                <span class="text-gray-500">Update</span><span class="font-medium text-white/90">April 2026</span>
                             </div>
                         </div>
                         <div class="flex flex-col sm:flex-row gap-3">
-                            <a href="#" class="flex-1 py-4 bg-euclid text-white font-bold rounded-2xl text-center hover:bg-euclid/90 transition shadow-lg shadow-euclid/20 hover:shadow-euclid/40 hover:scale-[1.02] hover:-translate-y-0.5 duration-300">Download Build</a>
-                            <a href="#" class="flex-1 py-4 border border-white/10 text-white font-bold rounded-2xl text-center hover:border-white/30 hover:bg-white/5 transition duration-300">Changelog</a>
+                            <a href="#" class="flex-1 py-3.5 bg-euclid text-white font-semibold rounded-xl text-center hover:bg-euclid/90 transition-all duration-300 shadow-lg shadow-euclid/15 hover:shadow-euclid/30 hover:scale-[1.02] hover:-translate-y-0.5 text-sm">Download Build</a>
+                            <a href="#" class="flex-1 py-3.5 border border-white/[0.08] text-white/90 font-semibold rounded-xl text-center hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 text-sm">Changelog</a>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Coming Soon / Secondary -->
-            <div class="flex flex-col gap-6">
-                <div class="glass-card rounded-[2.5rem] p-8 text-center opacity-50 border-dashed border-white/10 group reveal-section relative">
-                    <div class="glow-border group-hover:opacity-20"></div>
-                    <div class="w-16 h-16 bg-white/5 rounded-2xl flex items-center justify-center border border-dashed border-white/20 mx-auto mb-4">
-                        <span class="text-3xl text-gray-600">?</span>
+            <!-- Coming Soon -->
+            <div class="flex flex-col gap-5">
+                <div class="glass-card rounded-[2rem] p-7 text-center opacity-50 border-dashed border-white/[0.06] group reveal-section relative">
+                    <div class="w-14 h-14 bg-white/[0.03] rounded-xl flex items-center justify-center border border-dashed border-white/15 mx-auto mb-4">
+                        <span class="text-2xl text-gray-600">?</span>
                     </div>
-                    <h3 class="text-xl font-bold text-gray-500 mb-2">Expanding...</h3>
-                    <p class="text-xs text-gray-600 font-medium uppercase tracking-widest mb-6">Next device in testing</p>
-                    <div class="space-y-2 mb-6">
+                    <h3 class="text-lg font-bold text-gray-500 mb-1.5">Expanding...</h3>
+                    <p class="text-[10px] text-gray-600 font-semibold uppercase tracking-[0.2em] mb-5">Next device in testing</p>
+                    <div class="space-y-2 mb-5">
                         <div class="flex justify-between text-xs text-gray-600"><span>Status</span><span>Testing</span></div>
-                        <div class="w-full bg-white/5 rounded-full h-1.5"><div class="bg-gray-700 h-1.5 rounded-full w-1/3 animate-pulse"></div></div>
+                        <div class="w-full bg-white/[0.04] rounded-full h-1.5"><div class="bg-gray-700 h-1.5 rounded-full w-1/3 animate-pulse"></div></div>
                     </div>
-                    <button class="w-full py-4 border border-white/10 text-gray-500 font-bold rounded-2xl cursor-not-allowed">Coming Soon</button>
+                    <button class="w-full py-3.5 border border-white/[0.06] text-gray-500 font-semibold rounded-xl cursor-not-allowed text-sm">Coming Soon</button>
                 </div>
             </div>
         </div>
 
         <!-- Community CTA -->
-        <div class="glass-card rounded-[2.5rem] p-12 md:p-16 text-center relative overflow-hidden reveal-section">
-            <div class="absolute -inset-16 bg-gradient-to-br from-euclid/20 to-cyan-500/10 blur-3xl pointer-events-none"></div>
+        <div class="glass-card rounded-[2rem] p-10 md:p-14 text-center relative overflow-hidden reveal-section">
+            <div class="absolute -inset-20 bg-gradient-to-br from-euclid/10 to-cyan-500/[0.05] blur-3xl pointer-events-none"></div>
             <div class="relative z-10">
-                <div class="inline-block p-4 rounded-full bg-euclid/10 border border-euclid/20 mb-6">
-                    <span class="text-4xl">&#128226;</span>
+                <div class="inline-block p-3.5 rounded-full bg-euclid/[0.08] border border-euclid/15 mb-5">
+                    <span class="text-3xl">&#128226;</span>
                 </div>
-                <h3 class="text-3xl md:text-4xl font-display font-bold mb-4">Community Driven.</h3>
-                <p class="text-euclid-muted max-w-lg mx-auto mb-8">We are actively looking for passionate maintainers to bring EuclidOS to a wider range of premium hardware. Ready to build for your device?</p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <a href="#" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-euclid text-white font-bold rounded-full hover:bg-euclid/90 transition shadow-lg shadow-euclid/20 hover:shadow-euclid/40 hover:-translate-y-0.5 duration-300">Apply to Maintain</a>
-                    <a href="#" class="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/10 text-white font-medium rounded-full hover:border-white/30 hover:bg-white/5 transition">Contact Us</a>
+                <h3 class="text-2xl md:text-3xl font-display font-bold mb-3">Community Driven.</h3>
+                <p class="text-euclid-muted max-w-md mx-auto mb-7 text-sm leading-relaxed">We are actively looking for passionate maintainers to bring EuclidOS to a wider range of premium hardware. Ready to build for your device?</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <a href="#" class="magnetic-btn inline-flex items-center justify-center gap-2 px-7 py-3.5 bg-euclid text-white font-semibold rounded-full hover:bg-euclid/90 transition-all duration-300 shadow-lg shadow-euclid/15 hover:shadow-euclid/30 hover:-translate-y-0.5 text-sm">Apply to Maintain</a>
+                    <a href="#" class="inline-flex items-center justify-center gap-2 px-7 py-3.5 border border-white/10 text-white/80 font-medium rounded-full hover:border-white/20 hover:bg-white/[0.03] transition-all duration-300 text-sm">Contact Us</a>
                 </div>
             </div>
         </div>
     </main>
 
-    <!-- ═══════════════════════════ ☆ FOOTER ☆ ═══════════════════════════ -->
-    <footer class="relative py-20 px-6 border-t border-white/5">
+    <!-- ═══════════════ FOOTER ═══════════════ -->
+    <footer class="relative py-16 md:py-20 px-6 border-t border-white/[0.04]">
         <div class="max-w-7xl mx-auto">
-            <div class="grid md:grid-cols-4 gap-12 mb-16">
-                <div class="md:col-span-2">
-                    <div class="flex items-center gap-3 mb-6">
-                        <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-10 h-10 rounded-xl border border-white/10">
-                        <span class="text-2xl font-display font-bold text-white">EUCLID<span class="text-euclid">OS</span></span>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
+                <div class="sm:col-span-2 lg:col-span-2">
+                    <div class="flex items-center gap-2.5 mb-5">
+                        <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-9 h-9 rounded-lg border border-white/10">
+                        <span class="text-lg font-display font-bold text-white">EUCLID<span class="text-euclid">OS</span></span>
                     </div>
-                    <p class="text-sm text-euclid-muted max-w-sm leading-relaxed mb-6">Geometry in Motion. A refined AOSP-based operating system built for precision and performance.</p>
-                    <div class="flex gap-4">
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition duration-300 hover:-translate-y-1"><span class="text-sm">T</span></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition duration-300 hover:-translate-y-1"><span class="text-sm">I</span></a>
-                        <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:border-white/30 transition duration-300 hover:-translate-y-1"><span class="text-sm">G</span></a>
+                    <p class="text-sm text-euclid-muted max-w-sm leading-relaxed mb-5">Geometry in Motion. A refined AOSP-based operating system built for precision and performance.</p>
+                    <div class="flex gap-3">
+                        <a href="#" class="w-9 h-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-gray-500 hover:text-white hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5" aria-label="Telegram"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg></a>
+                        <a href="#" class="w-9 h-9 rounded-full bg-white/[0.04] border border-white/[0.06] flex items-center justify-center text-gray-500 hover:text-white hover:border-white/20 transition-all duration-300 hover:-translate-y-0.5" aria-label="GitHub"><svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a>
                     </div>
                 </div>
                 <div>
-                    <h4 class="font-bold text-white mb-6 font-display">Navigation</h4>
-                    <ul class="space-y-3">
-                        <li><a href="index.html" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Home</a></li>
-                        <li><a href="index.html#features" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Features</a></li>
-                        <li><a href="index.html#screenshots" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Screenshots</a></li>
-                        <li><a href="downloads.html" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Downloads</a></li>
+                    <h4 class="font-semibold text-white/90 mb-5 text-sm">Navigation</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="index.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Home</a></li>
+                        <li><a href="index.html#features" class="text-sm text-euclid-muted hover:text-white transition duration-300">Features</a></li>
+                        <li><a href="screenshots.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Screenshots</a></li>
+                        <li><a href="downloads.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Downloads</a></li>
                     </ul>
                 </div>
                 <div>
-                    <h4 class="font-bold text-white mb-6 font-display">Resources</h4>
-                    <ul class="space-y-3">
-                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">GitHub</a></li>
-                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Changelog</a></li>
-                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300 link-hover">Documentation</a></li>
+                    <h4 class="font-semibold text-white/90 mb-5 text-sm">Resources</h4>
+                    <ul class="space-y-2.5">
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300">GitHub</a></li>
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300">Changelog</a></li>
+                        <li><a href="#" class="text-sm text-euclid-muted hover:text-white transition duration-300">Documentation</a></li>
                     </ul>
                 </div>
             </div>
-            <div class="flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/5 gap-4">
-                <p class="text-xs text-euclid-muted/50">&copy; 2026 EuclidOS Project. Not affiliated with Google LLC.</p>
-                <div class="flex gap-6">
-                    <a href="#" class="text-xs text-euclid-muted/50 hover:text-euclid-muted transition">Privacy Policy</a>
+            <div class="flex flex-col sm:flex-row justify-between items-center pt-8 border-t border-white/[0.04] gap-4">
+                <p class="text-xs text-euclid-muted/40">&copy; 2026 EuclidOS Project. Not affiliated with Google LLC.</p>
+                <div class="flex gap-5">
+                    <a href="#" class="text-xs text-euclid-muted/40 hover:text-euclid-muted transition">Privacy Policy</a>
                 </div>
             </div>
         </div>
     </footer>
 
-    <!-- ═══════════════════════════ ☆ SCRIPTS ☆ ═══════════════════════════ -->
+    <!-- ═══════════════ SCRIPTS ═══════════════ -->
     <script>
-        // ─── Lenis Smooth Scroll ───
+    (function() {
+        'use strict';
+
         const lenis = new Lenis({
-            duration: 1.2,
+            duration: 1.3,
             easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
             smoothWheel: true,
-            wheelMultiplier: 1,
-            touchMultiplier: 2,
+            wheelMultiplier: 0.9,
+            touchMultiplier: 1.5,
         });
         function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
         requestAnimationFrame(raf);
+
         lenis.on('scroll', (e) => {
             ScrollTrigger.update();
-            const progress = document.getElementById('scroll-progress');
-            if(progress) progress.style.width = (e.progress * 100).toFixed(2) + '%';
+            const bar = document.getElementById('scroll-progress');
+            if (bar) bar.style.width = (e.progress * 100).toFixed(2) + '%';
         });
 
-        // ─── GSAP & ScrollTrigger ───
         gsap.registerPlugin(ScrollTrigger);
 
-        // ─── Navbar Logic ───
+        // Navbar
         const navbar = document.getElementById('navbar');
         const navGlass = document.getElementById('nav-glass');
-        let lastScroll = 0;
-        window.addEventListener('scroll', () => {
-            const currentScroll = window.scrollY;
-            if (currentScroll > 50) {
-                navGlass.classList.remove('opacity-0'); navGlass.classList.add('opacity-100');
+        let lastScrollY = 0;
+        let navHidden = false;
+        let navTicking = false;
+
+        function updateNavbar() {
+            const y = window.scrollY;
+            if (y > 30) {
+                navGlass.style.opacity = '1';
+            } else {
+                navGlass.style.opacity = '0';
+            }
+            const goingDown = y > lastScrollY;
+            if (goingDown && y > 200 && !navHidden) {
+                navbar.style.transform = 'translateY(-100%)';
+                navHidden = true;
+            } else if (!goingDown && navHidden) {
                 navbar.style.transform = 'translateY(0)';
-            } else {
-                navGlass.classList.add('opacity-0'); navGlass.classList.remove('opacity-100');
+                navHidden = false;
             }
-            if (currentScroll > lastScroll && currentScroll > 100) { navbar.style.transform = 'translateY(-100%)'; } 
-            else { navbar.style.transform = 'translateY(0)'; }
-            lastScroll = currentScroll;
-        }, { passive: true });
-        setTimeout(() => { navbar.style.transform = 'translateY(0)'; }, 200);
-
-        // ─── Mobile Menu ───
-        const menuBtn = document.getElementById('menu-btn');
-        const mobileDrawer = document.getElementById('mobile-drawer');
-        const drawerPanel = document.getElementById('drawer-panel');
-        const drawerBackdrop = document.getElementById('drawer-backdrop');
-        const hamTop = document.getElementById('ham-top');
-        const hamMid = document.getElementById('ham-mid');
-        const hamBot = document.getElementById('ham-bot');
-        let isMenuOpen = false;
-
-        function toggleMenu() {
-            isMenuOpen = !isMenuOpen;
-            if (isMenuOpen) {
-                mobileDrawer.classList.remove('pointer-events-none', 'opacity-0');
-                mobileDrawer.classList.add('pointer-events-auto', 'opacity-100');
-                drawerPanel.style.transform = 'translateX(0)';
-                hamTop.style.transform = 'translateY(7.5px) rotate(45deg)'; hamMid.style.opacity = '0'; hamBot.style.transform = 'translateY(-7.5px) rotate(-45deg)';
-            } else {
-                mobileDrawer.classList.add('pointer-events-none', 'opacity-0');
-                mobileDrawer.classList.remove('pointer-events-auto', 'opacity-100');
-                drawerPanel.style.transform = 'translateX(100%)';
-                hamTop.style.transform = 'none'; hamMid.style.opacity = '1'; hamBot.style.transform = 'none';
-            }
+            lastScrollY = y;
+            navTicking = false;
         }
-        menuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
-        drawerBackdrop.addEventListener('click', toggleMenu);
+        window.addEventListener('scroll', () => {
+            if (!navTicking) { requestAnimationFrame(updateNavbar); navTicking = true; }
+        }, { passive: true });
 
-        // ─── Scroll Reveal ───
-        document.querySelectorAll('.reveal-section').forEach((el) => {
-            gsap.to(el, { y: 0, opacity: 1, duration: 0.8, ease: "power3.out",
-                scrollTrigger: { trigger: el, start: "top 85%", toggleActions: "play none none none" }
+        // Mobile Menu
+        const menuBtn = document.getElementById('menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const menuBackdrop = document.getElementById('menu-backdrop');
+        const menuNavItems = document.querySelectorAll('.menu-nav-item');
+        const menuCtaBtn = document.querySelector('.menu-cta-btn');
+        let isMenuOpen = false;
+        let menuTL = null;
+
+        function openMenu() {
+            isMenuOpen = true;
+            menuBtn.classList.add('ham-open');
+            mobileMenu.classList.add('active');
+            lenis.stop();
+            menuTL = gsap.timeline({ defaults: { ease: "power3.out" } });
+            menuTL.to(menuNavItems, { opacity: 1, y: 0, duration: 0.5, stagger: 0.06, delay: 0.15 })
+                  .to(menuCtaBtn, { opacity: 1, y: 0, duration: 0.5 }, "-=0.25");
+        }
+
+        function closeMenu() {
+            isMenuOpen = false;
+            menuBtn.classList.remove('ham-open');
+            if (menuTL) menuTL.kill();
+            gsap.to([menuNavItems, menuCtaBtn], {
+                opacity: 0, y: 10, duration: 0.2, stagger: 0.02, ease: "power2.in",
+                onComplete: () => {
+                    mobileMenu.classList.remove('active');
+                    gsap.set(menuNavItems, { opacity: 0, y: 20 });
+                    gsap.set(menuCtaBtn, { opacity: 0, y: 20 });
+                }
+            });
+            lenis.start();
+        }
+
+        function toggleMenu() { isMenuOpen ? closeMenu() : openMenu(); }
+
+        menuBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+        menuBackdrop.addEventListener('click', closeMenu);
+        menuNavItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = item.getAttribute('href');
+                closeMenu();
+                if (href && !href.startsWith('#')) {
+                    setTimeout(() => { window.location.href = href; }, 350);
+                }
             });
         });
+
+        // Scroll Reveal
+        document.querySelectorAll('.reveal-section').forEach((el) => {
+            gsap.to(el, {
+                y: 0, opacity: 1, duration: 0.7,
+                ease: "power3.out",
+                scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" }
+            });
+        });
+
+        // 3D Tilt Cards
+        document.querySelectorAll('.tilt-card').forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
+            });
+            card.addEventListener('mouseleave', () => {
+                gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out" });
+                card.style.transform = '';
+            });
+        });
+
+        // Smooth scroll anchors
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href === '#') return;
+                e.preventDefault();
+                const target = document.querySelector(href);
+                if (target) lenis.scrollTo(target, { offset: -70, duration: 1.5 });
+            });
+        });
+    })();
     </script>
 </body>
 </html>
