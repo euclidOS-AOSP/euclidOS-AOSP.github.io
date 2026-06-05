@@ -1,0 +1,34 @@
+{
+    "contributors": [
+        {
+            "name": "MODEDGES",
+            "role": "Lead Developer",
+            "roleColor": "euclid",
+            "avatar": "https://github.com/MODEDGES.png",
+            "github": "https://github.com/MODEDGES",
+            "telegram": "https://t.me/MODEDGES",
+            "description": "Core contributor driving the EuclidOS vision. Architecting the system from the ground up with precision and passion.",
+            "active": true
+        },
+        {
+            "name": "Mrick343",
+            "role": "Developer",
+            "roleColor": "euclid",
+            "avatar": "https://github.com/Mrick343.png",
+            "github": "https://github.com/Mrick343",
+            "telegram": "https://t.me/Mrick343",
+            "description": "Founding contributor to EuclidOS, still actively helping shape the project's growth through code, guidance, and innovation.",
+            "active": true
+        },
+        {
+            "name": "Kaveer Rana",
+            "role": "UI / Frontend Developer",
+            "roleColor": "purple",
+            "avatar": "https://github.com/Kaveer2009.png",
+            "github": "https://github.com/Kaveer2009",
+            "telegram": "https://t.me/KaveerRana",
+            "description": "Crafting the visual identity and premium user experience of EuclidOS. Turning geometric aesthetics into reality.",
+            "active": true
+        }
+    ]
+}
