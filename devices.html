@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Devices | EuclidOS</title>
+    <meta name="description" content="Explore all EuclidOS supported devices. Find your device, check status, and download the latest builds.">
+    <link rel="icon" type="image/jpeg" href="assets/screenshots/logo.jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        euclid: '#4d78ff',
+                        'euclid-dark': '#03030a',
+                        'euclid-muted': '#8888a0',
+                        'euclid-dim': 'rgba(77, 120, 255, 0.1)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --clr-primary: #4d78ff;
+            --clr-primary-dim: rgba(77, 120, 255, 0.1);
+            --bg-main: #03030a;
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border-hover: rgba(255, 255, 255, 0.12);
+            --glow: #9ea8ff;
+            --accent-cyan: #00f0ff;
+            --text-muted: #8888a0;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-main);
+            color: #f0f0f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+        #noise-overlay {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 9999;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        #scroll-progress {
+            position: fixed; top: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            z-index: 10001; width: 0%;
+            box-shadow: 0 0 12px var(--clr-primary);
+        }
+        .glass {
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
+            border: 1px solid var(--glass-border);
+        }
+        .glass-card {
+            background: rgba(16, 16, 30, 0.5);
+            backdrop-filter: blur(20px) saturate(150%);
+            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+            transition: all 0.5s var(--ease-out);
+        }
+        .glass-card:hover {
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 40px var(--clr-primary-dim), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+        }
+        #ambient-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .ambient-blob {
+            position: absolute; border-radius: 50%;
+            filter: blur(120px); opacity: 0.3;
+            animation: ambientFloat 25s ease-in-out infinite alternate;
+            will-change: transform;
+        }
+        @keyframes ambientFloat {
+            0%   { transform: translate(0, 0) scale(1); }
+            25%  { transform: translate(40px, -60px) scale(1.05); }
+            50%  { transform: translate(-30px, 40px) scale(0.95); }
+            75%  { transform: translate(20px, -30px) scale(1.08); }
+            100% { transform: translate(-20px, 20px) scale(1); }
+        }
+        .reveal-section { opacity: 0; transform: translateY(30px); }
+        #navbar { transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out); will-change: transform; }
+        #nav-glass { transition: opacity 0.4s var(--ease-out); }
+        .nav-link {
+            position: relative; padding: 8px 16px;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            border-radius: 9999px;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        .nav-link:hover { color: #fff; background-color: rgba(255,255,255,0.08); }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 1px; background: var(--clr-primary);
+            transition: width 0.3s var(--ease-out);
+        }
+        .nav-link:hover::after { width: 16px; }
+        .ham-btn {
+            width: 44px; height: 44px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 5px; position: relative;
+            border-radius: 12px; background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.4s var(--ease-out);
+            -webkit-tap-highlight-color: transparent; cursor: pointer;
+        }
+        .ham-btn:active { transform: scale(0.92); }
+        .ham-btn .ham-line {
+            display: block; width: 20px; height: 1.5px;
+            background: white; border-radius: 4px;
+            transition: all 0.5s var(--ease-out);
+            transform-origin: center; position: absolute;
+        }
+        .ham-btn .ham-line:nth-child(1) { transform: translateY(-6px); }
+        .ham-btn .ham-line:nth-child(2) { transform: translateY(0); }
+        .ham-btn .ham-line:nth-child(3) { transform: translateY(6px); }
+        .ham-btn.ham-open .ham-line:nth-child(1) { transform: translateY(0) rotate(45deg); }
+        .ham-btn.ham-open .ham-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .ham-btn.ham-open .ham-line:nth-child(3) { transform: translateY(0) rotate(-45deg); }
+        .ham-btn.ham-open { background: rgba(77,120,255,0.12); border-color: rgba(77,120,255,0.25); }
+        .ham-btn .ham-glow {
+            position: absolute; inset: -4px; border-radius: 16px;
+            background: radial-gradient(circle, rgba(77,120,255,0.25), transparent 70%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
+        }
+        .ham-btn.ham-open .ham-glow { opacity: 1; }
+        .mobile-menu-overlay { position: fixed; inset: 0; pointer-events: none; }
+        .mobile-menu-overlay.active { pointer-events: auto; }
+        .menu-backdrop {
+            position: absolute; inset: 0;
+            background: rgba(2,2,8,0.7);
+            backdrop-filter: blur(12px) saturate(120%);
+            -webkit-backdrop-filter: blur(12px) saturate(120%);
+            opacity: 0; transition: opacity 0.5s var(--ease-out);
+        }
+        .mobile-menu-overlay.active .menu-backdrop { opacity: 1; }
+        .menu-panel {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 80px 32px 48px;
+            opacity: 0; transform: scale(0.96);
+            transition: all 0.5s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .menu-ambient {
+            position: absolute; border-radius: 50%;
+            filter: blur(100px); opacity: 0;
+            transition: opacity 0.8s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-ambient { opacity: 1; }
+        .menu-nav-item {
+            display: block; font-family: var(--font-display);
+            font-size: clamp(1.75rem, 6vw, 2.5rem); font-weight: 600;
+            color: rgba(255,255,255,0.35); padding: 12px 0;
+            text-decoration: none; position: relative;
+            opacity: 0; transform: translateY(20px);
+            transition: color 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-nav-item:hover, .menu-nav-item:active { color: white; }
+        .menu-nav-item::after {
+            content: ''; position: absolute; left: 0; bottom: 4px;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            border-radius: 2px; transition: width 0.4s var(--ease-out);
+            box-shadow: 0 0 8px var(--clr-primary);
+        }
+        .menu-nav-item:hover::after, .menu-nav-item:active::after { width: 100%; }
+        .menu-nav-item .item-index {
+            display: inline-block; font-size: 10px; font-family: var(--font-base);
+            font-weight: 500; color: var(--clr-primary);
+            margin-right: 12px; min-width: 20px; letter-spacing: 0.05em;
+        }
+        .menu-nav-item .item-arrow {
+            display: inline-block; margin-left: 12px;
+            opacity: 0; transform: translateX(-8px);
+            transition: all 0.3s var(--ease-out);
+        }
+        .menu-nav-item:hover .item-arrow { opacity: 0.5; transform: translateX(0); }
+        .menu-cta-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 36px; background: var(--clr-primary);
+            color: white; font-weight: 600; font-size: 15px;
+            border-radius: 9999px; text-decoration: none;
+            opacity: 0; transform: translateY(20px);
+            box-shadow: 0 0 30px rgba(77,120,255,0.25);
+            transition: transform 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-cta-btn:active { transform: scale(0.96) translateY(0); }
+        .tilt-card {
+            transform-style: preserve-3d;
+            transition: transform 0.15s linear;
+            will-change: transform;
+        }
+        .tilt-card .glow-border {
+            position: absolute; inset: -1px; border-radius: inherit;
+            background: conic-gradient(from 0deg, transparent, 60%, var(--clr-primary), transparent);
+            opacity: 0; transition: opacity 0.6s var(--ease-out); z-index: -1;
+        }
+        .tilt-card:hover .glow-border { opacity: 0.5; }
+        .magnetic-btn {
+            position: relative; overflow: hidden;
+            transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
+        }
+        .magnetic-btn::before {
+            content: ''; position: absolute; top: 50%; left: 50%;
+            width: 0; height: 0; border-radius: 50%;
+            background: rgba(255,255,255,0.15); transform: translate(-50%, -50%);
+            transition: width 0.6s var(--ease-out), height 0.6s var(--ease-out);
+        }
+        .magnetic-btn:hover::before { width: 300%; height: 300%; }
+        ::selection { background: rgba(77, 120, 255, 0.3); color: white; }
+
+        /* Search & Filter */
+        .search-input {
+            background: rgba(16, 16, 30, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 9999px;
+            padding: 12px 20px 12px 44px;
+            color: white;
+            font-size: 14px;
+            width: 100%;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .search-input:focus {
+            border-color: rgba(77, 120, 255, 0.4);
+            box-shadow: 0 0 20px rgba(77, 120, 255, 0.1);
+        }
+        .search-input::placeholder { color: rgba(255,255,255,0.3); }
+        .filter-btn {
+            padding: 8px 16px;
+            border-radius: 9999px;
+            font-size: 12px;
+            font-weight: 500;
+            border: 1px solid var(--glass-border);
+            background: rgba(16, 16, 30, 0.4);
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            transition: all 0.3s var(--ease-out);
+        }
+        .filter-btn:hover {
+            border-color: var(--glass-border-hover);
+            color: white;
+        }
+        .filter-btn.active {
+            background: rgba(77, 120, 255, 0.15);
+            border-color: rgba(77, 120, 255, 0.4);
+            color: var(--clr-primary);
+        }
+        .sort-select {
+            background: rgba(16, 16, 30, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 32px;
+        }
+        .sort-select option { background: #0c0c18; }
+        .device-card {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
+
+    <div id="ambient-bg">
+        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(77,120,255,0.4) 0%, transparent 70%); top: -200px; left: -100px;"></div>
+        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(108,92,231,0.3) 0%, transparent 70%); top: 30%; right: -200px; animation-delay: -8s;"></div>
+        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,123,255,0.25) 0%, transparent 70%); top: 60%; left: -100px; animation-delay: -14s;"></div>
+    </div>
+    <div id="noise-overlay"></div>
+    <div id="scroll-progress"></div>
+
+    <div id="app"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        const app = document.getElementById('app');
+
+        async function init() {
+            app.innerHTML = `
+                ${EuclidApp.buildNavbar('devices')}
+                ${EuclidApp.buildMobileMenu('devices')}
+
+                <header class="relative pt-32 pb-20 px-6 text-center overflow-hidden">
+                    <div class="absolute inset-0 z-0">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-euclid/10 rounded-full blur-[120px] pointer-events-none"></div>
+                    </div>
+                    <div class="relative z-10 max-w-3xl mx-auto">
+                        <div class="inline-flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-2 mb-8 reveal-section">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
+                            </span>
+                            <span class="text-sm text-gray-300 font-medium tracking-wide">ALL DEVICES</span>
+                        </div>
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 reveal-section leading-[1.05]">
+                            Supported <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Devices.</span>
+                        </h1>
+                        <p class="text-base md:text-lg text-euclid-muted max-w-xl mx-auto mb-10 reveal-section leading-relaxed">
+                            Every device EuclidOS supports. Browse, search, and find your perfect build.
+                        </p>
+                    </div>
+                </header>
+
+                <main class="max-w-7xl mx-auto px-6 pb-28 relative z-10">
+                    <div id="controls" class="reveal-section mb-10">
+                        <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                            <div class="relative w-full md:w-96">
+                                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+                                <input type="text" id="search-input" class="search-input" placeholder="Search by name, codename, or vendor...">
+                            </div>
+                            <div class="flex flex-wrap gap-2 items-center">
+                                <button class="filter-btn active" data-filter="all">All</button>
+                                <button class="filter-btn" data-filter="active">Active</button>
+                                <button class="filter-btn" data-filter="inactive">Inactive</button>
+                                <div class="w-px h-5 bg-white/10 mx-1 hidden md:block"></div>
+                                <select id="sort-select" class="sort-select">
+                                    <option value="name-asc">Name A-Z</option>
+                                    <option value="name-desc">Name Z-A</option>
+                                    <option value="vendor-asc">Vendor A-Z</option>
+                                    <option value="status-desc">Active First</option>
+                                    <option value="status-asc">Inactive First</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="vendor-filters" class="flex flex-wrap gap-2 mt-3"></div>
+                    </div>
+
+                    <div id="device-count" class="text-xs text-gray-500 mb-5 font-mono"></div>
+                    <div id="device-grid" class="grid md:grid-cols-2 gap-5 max-w-5xl mx-auto"></div>
+                    <div id="empty-state" class="empty-state hidden">
+                        <div class="text-5xl mb-4 opacity-30">&#128241;</div>
+                        <h3 class="text-xl font-display font-bold text-gray-500 mb-2">No devices found</h3>
+                        <p class="text-sm text-gray-600">Try adjusting your search or filters.</p>
+                    </div>
+                </main>
+
+                ${EuclidApp.buildFooter()}
+            `;
+
+            const devices = await EuclidApp.getDevices();
+            const vendors = [...new Set(devices.map(d => d.vendor))].sort();
+            let activeFilter = 'all';
+            let activeVendor = null;
+            let searchQuery = '';
+            let sortBy = 'name-asc';
+
+            // Vendor filter buttons
+            const vendorContainer = document.getElementById('vendor-filters');
+            vendors.forEach(v => {
+                const btn = document.createElement('button');
+                btn.className = 'filter-btn';
+                btn.dataset.vendor = v;
+                btn.textContent = v;
+                btn.addEventListener('click', () => {
+                    if (activeVendor === v) {
+                        activeVendor = null;
+                        btn.classList.remove('active');
+                    } else {
+                        vendorContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        activeVendor = v;
+                        btn.classList.add('active');
+                    }
+                    renderDevices();
+                });
+                vendorContainer.appendChild(btn);
+            });
+
+            function getFilteredDevices() {
+                let filtered = [...devices];
+
+                if (activeFilter === 'active') filtered = filtered.filter(d => d.active);
+                else if (activeFilter === 'inactive') filtered = filtered.filter(d => !d.active);
+
+                if (activeVendor) filtered = filtered.filter(d => d.vendor === activeVendor);
+
+                if (searchQuery) {
+                    const q = searchQuery.toLowerCase();
+                    filtered = filtered.filter(d =>
+                        d.device_name.toLowerCase().includes(q) ||
+                        d.codename.toLowerCase().includes(q) ||
+                        d.vendor.toLowerCase().includes(q) ||
+                        d.maintainer.toLowerCase().includes(q)
+                    );
+                }
+
+                filtered.sort((a, b) => {
+                    switch (sortBy) {
+                        case 'name-asc': return a.device_name.localeCompare(b.device_name);
+                        case 'name-desc': return b.device_name.localeCompare(a.device_name);
+                        case 'vendor-asc': return a.vendor.localeCompare(b.vendor) || a.device_name.localeCompare(b.device_name);
+                        case 'status-desc': return (b.active ? 1 : 0) - (a.active ? 1 : 0);
+                        case 'status-asc': return (a.active ? 1 : 0) - (b.active ? 1 : 0);
+                        default: return 0;
+                    }
+                });
+
+                return filtered;
+            }
+
+            function renderDevices() {
+                const grid = document.getElementById('device-grid');
+                const empty = document.getElementById('empty-state');
+                const count = document.getElementById('device-count');
+                const filtered = getFilteredDevices();
+
+                count.textContent = `${filtered.length} device${filtered.length !== 1 ? 's' : ''} found`;
+
+                if (filtered.length === 0) {
+                    grid.innerHTML = '';
+                    empty.classList.remove('hidden');
+                    return;
+                }
+
+                empty.classList.add('hidden');
+                grid.innerHTML = filtered.map((d, i) => `
+                    <a href="device.html?codename=${d.codename}" class="device-card glass-card rounded-[2rem] p-7 flex flex-col relative overflow-hidden group tilt-card no-underline" style="animation-delay: ${i * 0.05}s;">
+                        <div class="glow-border group-hover:opacity-50"></div>
+                        <div class="flex items-start gap-4 mb-5 relative">
+                            <div class="w-14 h-14 bg-gradient-to-br from-euclid/15 to-white/[0.03] rounded-2xl flex items-center justify-center border border-white/[0.06] group-hover:border-euclid/25 transition-all duration-300 relative flex-shrink-0">
+                                <span class="text-2xl">&#128241;</span>
+                                ${d.active ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[#10101e] shadow-lg shadow-green-400/30"></div>' : '<div class="absolute -top-1 -right-1 w-3 h-3 bg-red-400/70 rounded-full border-2 border-[#10101e]"></div>'}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="text-lg font-bold text-white mb-1 truncate">${d.device_name}</h3>
+                                <p class="text-xs text-gray-500 font-mono">${d.codename}</p>
+                            </div>
+                            ${EuclidApp.statusBadge(d.active)}
+                        </div>
+                        <div class="space-y-2 mb-5 flex-1 relative">
+                            <div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]">
+                                <span class="text-gray-500">Vendor</span>
+                                <span class="text-white/80">${d.vendor}</span>
+                            </div>
+                            <div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]">
+                                <span class="text-gray-500">Maintainer</span>
+                                <span class="text-white/80">${d.maintainer}</span>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <span class="w-full py-3 bg-gradient-to-r from-euclid/20 to-blue-600/20 text-euclid font-semibold rounded-xl text-center text-sm border border-euclid/15 group-hover:from-euclid group-hover:to-blue-600 group-hover:text-white group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-euclid/15 transition-all duration-300 flex items-center justify-center gap-2">
+                                View Details
+                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </span>
+                        </div>
+                    </a>
+                `).join('');
+
+                // Animate cards in
+                requestAnimationFrame(() => {
+                    document.querySelectorAll('.device-card').forEach((card, i) => {
+                        gsap.to(card, {
+                            opacity: 1, y: 0, duration: 0.5,
+                            delay: i * 0.06,
+                            ease: "power3.out"
+                        });
+                    });
+                });
+
+                // Re-init tilt on new cards
+                document.querySelectorAll('.tilt-card').forEach(card => {
+                    card.addEventListener('mousemove', (e) => {
+                        const rect = card.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / rect.width - 0.5;
+                        const y = (e.clientY - rect.top) / rect.height - 0.5;
+                        card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) scale(1.01)`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out" });
+                        card.style.transform = '';
+                    });
+                });
+            }
+
+            // Event listeners
+            document.getElementById('search-input').addEventListener('input', (e) => {
+                searchQuery = e.target.value;
+                renderDevices();
+            });
+
+            document.querySelectorAll('#controls .filter-btn[data-filter]').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#controls .filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    activeFilter = btn.dataset.filter;
+                    renderDevices();
+                });
+            });
+
+            document.getElementById('sort-select').addEventListener('change', (e) => {
+                sortBy = e.target.value;
+                renderDevices();
+            });
+
+            renderDevices();
+            EuclidApp.initUI();
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html>
