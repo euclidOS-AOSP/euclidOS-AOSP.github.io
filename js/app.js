@@ -6,7 +6,7 @@
 const EuclidApp = (() => {
     'use strict';
 
-    const BASE = 'official_devices_temp';
+    const BASE = 'https://raw.githubusercontent.com/Kaveer2009/official_devices/refs/heads/16';
     const _cache = {};
 
     // ─── Data Fetching with Cache ───
