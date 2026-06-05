@@ -879,34 +879,35 @@
                 </h2>
                 <p class="text-base md:text-lg text-euclid-muted">Precision engineered for premium hardware.</p>
             </div>
-            <div class="grid md:grid-cols-2 gap-5 max-w-4xl mx-auto">
-                <div class="glass-card rounded-[2rem] p-7 flex flex-col items-center text-center hover:border-euclid/25 transition-all duration-500 group reveal-section relative overflow-hidden">
-                    <div class="glow-border group-hover:opacity-50"></div>
-                    <div class="w-18 h-18 md:w-20 md:h-20 bg-gradient-to-br from-euclid/15 to-white/[0.03] rounded-2xl flex items-center justify-center mb-5 border border-white/[0.06] group-hover:border-euclid/25 transition-all duration-300 relative">
-                        <span class="text-4xl">&#128241;</span>
-                        <div class="absolute -top-1.5 -right-1.5 w-3.5 h-3.5 bg-green-400 rounded-full border-2 border-[#08080f] shadow-lg shadow-green-400/30"></div>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-bold text-white mb-1.5">Galaxy Note10+ 5G</h3>
-                    <p class="text-xs text-euclid-muted mb-5 font-mono">d2x</p>
-                    <div class="w-full space-y-2 mb-6">
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">Version</span><span class="text-white/90 font-mono">v3.2 (Baklava)</span></div>
-                        <div class="flex justify-between text-xs"><span class="text-gray-500">Maintainer</span><span class="text-white/90">MODEDGES</span></div>
-                        <div class="w-full bg-white/[0.04] rounded-full h-1.5 mt-3"><div class="bg-gradient-to-r from-green-400 to-cyan-400 h-1.5 rounded-full w-full"></div></div>
-                    </div>
-                    <a href="downloads.html" class="w-full py-3 bg-gradient-to-r from-euclid to-blue-600 text-white font-semibold rounded-xl shadow-lg shadow-euclid/15 hover:shadow-euclid/30 hover:scale-[1.02] transition-all duration-300 text-sm">Download Build</a>
+            <div id="lineup-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+                <!-- Loading skeletons -->
+                <div class="glass-card rounded-[2rem] p-7 flex flex-col items-center text-center animate-pulse reveal-section">
+                    <div class="w-16 h-16 bg-white/[0.04] rounded-2xl mb-5"></div>
+                    <div class="h-5 w-32 bg-white/[0.04] rounded mb-2"></div>
+                    <div class="h-3 w-16 bg-white/[0.04] rounded mb-5"></div>
+                    <div class="w-full space-y-2 mb-5"><div class="h-3 bg-white/[0.04] rounded"></div><div class="h-3 bg-white/[0.04] rounded"></div></div>
+                    <div class="h-10 w-full bg-white/[0.04] rounded-xl"></div>
                 </div>
-                <div class="glass-card rounded-[2rem] p-7 flex flex-col items-center text-center border-dashed border-white/[0.06] group reveal-section">
-                    <div class="w-18 h-18 md:w-20 md:h-20 bg-white/[0.03] rounded-2xl flex items-center justify-center mb-5 border border-dashed border-white/[0.08]">
-                        <span class="text-4xl text-gray-600">&#128752;</span>
-                    </div>
-                    <h3 class="text-xl md:text-2xl font-bold text-gray-500 mb-1.5">Expanding...</h3>
-                    <p class="text-xs text-gray-600 mb-4">Community Growing</p>
-                    <div class="w-full space-y-2 mb-6">
-                        <div class="flex justify-between text-xs text-gray-600"><span>Status</span><span>Testing</span></div>
-                        <div class="w-full bg-white/[0.04] rounded-full h-1.5"><div class="bg-gray-700 h-1.5 rounded-full w-1/3 animate-pulse"></div></div>
-                    </div>
-                    <button class="w-full py-3 border border-white/[0.06] text-gray-500 font-semibold rounded-xl cursor-not-allowed text-sm">Coming Soon</button>
+                <div class="glass-card rounded-[2rem] p-7 flex flex-col items-center text-center animate-pulse reveal-section" style="animation-delay:0.1s">
+                    <div class="w-16 h-16 bg-white/[0.04] rounded-2xl mb-5"></div>
+                    <div class="h-5 w-28 bg-white/[0.04] rounded mb-2"></div>
+                    <div class="h-3 w-14 bg-white/[0.04] rounded mb-5"></div>
+                    <div class="w-full space-y-2 mb-5"><div class="h-3 bg-white/[0.04] rounded"></div><div class="h-3 bg-white/[0.04] rounded"></div></div>
+                    <div class="h-10 w-full bg-white/[0.04] rounded-xl"></div>
                 </div>
+                <div class="glass-card rounded-[2rem] p-7 flex flex-col items-center text-center animate-pulse reveal-section hidden lg:flex" style="animation-delay:0.2s">
+                    <div class="w-16 h-16 bg-white/[0.04] rounded-2xl mb-5"></div>
+                    <div class="h-5 w-36 bg-white/[0.04] rounded mb-2"></div>
+                    <div class="h-3 w-20 bg-white/[0.04] rounded mb-5"></div>
+                    <div class="w-full space-y-2 mb-5"><div class="h-3 bg-white/[0.04] rounded"></div><div class="h-3 bg-white/[0.04] rounded"></div></div>
+                    <div class="h-10 w-full bg-white/[0.04] rounded-xl"></div>
+                </div>
+            </div>
+            <div id="lineup-cta" class="text-center mt-12 reveal-section" style="opacity:0; transform:translateY(20px);">
+                <a href="devices.html" class="magnetic-btn inline-flex items-center gap-2 px-8 py-3.5 bg-euclid text-white font-semibold rounded-full shadow-[0_0_30px_rgba(77,120,255,0.25)] hover:shadow-[0_0_50px_rgba(77,120,255,0.45)] transition-all duration-500 hover:-translate-y-0.5 relative z-10">
+                    View All Devices
+                    <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </a>
             </div>
         </div>
     </section>
@@ -1235,6 +1236,107 @@
                 card.style.transform = '';
             });
         });
+
+        // ─── Dynamic Device Lineup ───
+        (async function() {
+            const grid = document.getElementById('lineup-grid');
+            const cta = document.getElementById('lineup-cta');
+            if (!grid) return;
+
+            const BASE = 'official_devices_temp';
+            let devices = [];
+            try {
+                const res = await fetch(BASE + '/devices.json');
+                if (!res.ok) throw new Error(res.status);
+                const data = await res.json();
+                devices = data.devices || [];
+            } catch (e) {
+                console.warn('Failed to load devices:', e);
+            }
+
+            const activeDevices = devices.filter(d => d.active).slice(0, 6);
+
+            const downloadCache = {};
+            const fetchDownload = async (codename) => {
+                if (downloadCache[codename]) return downloadCache[codename];
+                try {
+                    const res = await fetch(BASE + '/download/' + codename + '.json');
+                    if (!res.ok) return null;
+                    const data = await res.json();
+                    downloadCache[codename] = data;
+                    return data;
+                } catch (e) { return null; }
+            };
+
+            const downloads = await Promise.all(activeDevices.map(d => fetchDownload(d.codename)));
+
+            function statusBadge(active) {
+                if (active) {
+                    return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border border-green-500/40 text-green-400 bg-green-500/[0.08] backdrop-blur-sm"><span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span> Active</span>';
+                }
+                return '<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold border border-yellow-500/30 text-yellow-400/80 bg-yellow-500/[0.06]"><span class="w-1.5 h-1.5 bg-yellow-400/70 rounded-full"></span> Inactive</span>';
+            }
+
+            grid.innerHTML = activeDevices.map((d, i) => {
+                const dl = downloads[i];
+                const version = dl ? (dl.version || 'Latest') : 'N/A';
+                return '<a href="device.html?codename=' + d.codename + '" class="lineup-card glass-card rounded-[2rem] p-7 flex flex-col text-center hover:border-euclid/25 transition-all duration-500 group relative overflow-hidden" style="opacity:0; transform:translateY(30px);">' +
+                    '<div class="glow-border group-hover:opacity-50"></div>' +
+                    '<div class="w-16 h-16 bg-gradient-to-br from-euclid/15 to-white/[0.03] rounded-2xl flex items-center justify-center mx-auto mb-5 border border-white/[0.06] group-hover:border-euclid/25 transition-all duration-300 relative">' +
+                        '<span class="text-3xl">&#128241;</span>' +
+                        (d.active ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[#10101e] shadow-lg shadow-green-400/30"></div>' : '<div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400/70 rounded-full border-2 border-[#10101e]"></div>') +
+                    '</div>' +
+                    '<h3 class="text-lg font-bold text-white mb-1 truncate">' + d.device_name + '</h3>' +
+                    '<p class="text-xs text-euclid-muted mb-4 font-mono">' + d.codename + '</p>' +
+                    '<div class="w-full space-y-2 mb-5 flex-1">' +
+                        '<div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]"><span class="text-gray-500">Vendor</span><span class="text-white/80">' + d.vendor + '</span></div>' +
+                        '<div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]"><span class="text-gray-500">Maintainer</span><span class="text-white/80">' + d.maintainer + '</span></div>' +
+                        '<div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]"><span class="text-gray-500">Version</span><span class="text-white/80 font-mono">' + version + '</span></div>' +
+                    '</div>' +
+                    '<div class="w-full">' +
+                        '<span class="w-full py-3 bg-gradient-to-r from-euclid/20 to-blue-600/20 text-euclid font-semibold rounded-xl text-center text-sm border border-euclid/15 group-hover:from-euclid group-hover:to-blue-600 group-hover:text-white group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-euclid/15 transition-all duration-300 flex items-center justify-center gap-2">' +
+                            'View Details <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>' +
+                        '</span>' +
+                    '</div>' +
+                '</a>';
+            }).join('');
+
+            // Staggered reveal
+            gsap.to(cta, { opacity: 1, y: 0, duration: 0.7, ease: "power3.out", delay: 0.3,
+                scrollTrigger: { trigger: cta, start: "top 92%", toggleActions: "play none none none" }
+            });
+
+            document.querySelectorAll('.lineup-card').forEach((card, i) => {
+                gsap.to(card, {
+                    opacity: 1, y: 0, duration: 0.6,
+                    delay: 0.1 + i * 0.08,
+                    ease: "power3.out",
+                    scrollTrigger: { trigger: card, start: "top 90%", toggleActions: "play none none none" }
+                });
+            });
+
+            // Tilt on lineup cards
+            document.querySelectorAll('.lineup-card').forEach(card => {
+                card.addEventListener('mousemove', (e) => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = 'perspective(800px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 6) + 'deg) scale(1.02)';
+                });
+                card.addEventListener('mouseleave', () => {
+                    gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out" });
+                    card.style.transform = '';
+                });
+            });
+
+            // Custom cursor hover for new cards
+            if (window.innerWidth > 768) {
+                document.querySelectorAll('.lineup-card, #lineup-cta a').forEach(el => {
+                    el.addEventListener('mouseenter', () => { const r = document.getElementById('cursor-ring'); if (r) r.classList.add('hovering'); });
+                    el.addEventListener('mouseleave', () => { const r = document.getElementById('cursor-ring'); if (r) r.classList.remove('hovering'); });
+                });
+            }
+        })();
 
         // ─── Custom Cursor ───
         const cursorDot = document.getElementById('cursor-dot');
