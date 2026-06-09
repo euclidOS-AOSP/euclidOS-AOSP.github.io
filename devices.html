@@ -293,27 +293,27 @@
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 1.5rem;
             overflow: hidden;
-            transition: all 0.6s var(--ease-out);
+            transition: border-color 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
             opacity: 0; transform: translateY(30px);
             text-decoration: none; color: inherit; display: block;
+            will-change: transform;
         }
         .device-card:hover {
             border-color: rgba(255,255,255,0.12);
-            transform: translateY(-8px) !important;
-            box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 100px rgba(77,120,255,0.06);
+            box-shadow: 0 24px 64px rgba(0,0,0,0.45), 0 0 80px rgba(77,120,255,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
         }
         .device-card .card-glow {
             position: absolute; inset: -1px; border-radius: inherit;
-            background: conic-gradient(from 0deg, transparent, 35%, var(--clr-primary), 50%, transparent);
-            opacity: 0; transition: opacity 0.7s var(--ease-out);
+            background: conic-gradient(from 0deg, transparent, 30%, var(--clr-primary), 50%, transparent);
+            opacity: 0; transition: opacity 0.6s var(--ease-out);
             z-index: 0;
         }
-        .device-card:hover .card-glow { opacity: 0.3; }
+        .device-card:hover .card-glow { opacity: 0.35; }
         .device-card .card-reactive {
             position: absolute; inset: 0; border-radius: inherit;
             pointer-events: none; z-index: 1;
-            opacity: 0; transition: opacity 0.5s;
-            background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 50%), rgba(77,120,255,0.12), transparent);
+            opacity: 0; transition: opacity 0.4s var(--ease-out);
+            background: radial-gradient(circle 300px at var(--mx, 50%) var(--my, 50%), rgba(77,120,255,0.14), transparent);
         }
         .device-card:hover .card-reactive { opacity: 1; }
         .device-card .card-inner {
@@ -337,22 +337,36 @@
         .device-img {
             max-width: 70%; max-height: 85%;
             object-fit: contain;
-            opacity: 0; transform: scale(0.92);
-            transition: all 0.7s var(--ease-out);
+            opacity: 0;
+            transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
             filter: drop-shadow(0 12px 32px rgba(0,0,0,0.4));
         }
-        .device-img.loaded { opacity: 1; transform: scale(1); }
-        .device-card:hover .device-img { transform: scale(1.04); filter: drop-shadow(0 16px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 20px rgba(77,120,255,0.15)); }
+        .device-img.loaded {
+            opacity: 1;
+        }
+        .device-card:hover .device-img.loaded {
+            transform: scale(1.06);
+            filter: drop-shadow(0 16px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 24px rgba(77,120,255,0.2));
+        }
         .device-img-fallback {
-            display: none;
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
             width: 80px; height: 80px;
             background: linear-gradient(135deg, rgba(77,120,255,0.1), rgba(0,240,255,0.05));
             border-radius: 1.25rem;
             border: 1px solid rgba(255,255,255,0.06);
-            align-items: center; justify-content: center;
+            display: none; align-items: center; justify-content: center;
             font-size: 2.5rem;
         }
-        .device-img-fallback.show { display: flex; }
+        .device-img-fallback.visible { display: flex; }
+        .device-img-skeleton {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px; height: 100px;
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        .device-img-skeleton.hidden { display: none; }
 
         /* ─── Status Indicator ─── */
         .status-indicator {
@@ -426,8 +440,8 @@
             width: 100%; padding: 12px;
             border-radius: 12px;
             font-size: 13px; font-weight: 600;
-            background: linear-gradient(135deg, rgba(77,120,255,0.1), rgba(0,240,255,0.05));
-            border: 1px solid rgba(77,120,255,0.12);
+            background: linear-gradient(135deg, rgba(77,120,255,0.08), rgba(0,240,255,0.04));
+            border: 1px solid rgba(77,120,255,0.1);
             color: #4d78ff;
             transition: all 0.4s var(--ease-out);
         }
@@ -435,13 +449,14 @@
             background: linear-gradient(135deg, #4d78ff, #3b6bef);
             border-color: transparent;
             color: white;
-            box-shadow: 0 8px 24px rgba(77,120,255,0.25);
+            box-shadow: 0 8px 28px rgba(77,120,255,0.3);
+            transform: translateY(-1px);
         }
         .device-action svg {
             transition: transform 0.3s var(--ease-out);
         }
         .device-card:hover .device-action svg {
-            transform: translateX(3px);
+            transform: translateX(4px);
         }
 
         /* ─── Skeleton ─── */
@@ -505,7 +520,7 @@
         'use strict';
 
         const app = document.getElementById('app');
-        const BASE = 'official_devices_temp';
+        const BASE = 'https://raw.githubusercontent.com/euclid-Devices/official_devices/refs/heads/16';
         const IMG_BASE = BASE + '/device_img';
 
         async function init() {
@@ -665,12 +680,13 @@
                     const statusClass = d.active ? 'active' : 'inactive';
                     const statusText = d.active ? 'Active' : 'Inactive';
 
-                    return '<a href="device.html?codename=' + d.codename + '" class="device-card" style="animation-delay: ' + (i * 0.06) + 's;">' +
+                    return '<a href="device.html?codename=' + d.codename + '" class="device-card" data-codename="' + d.codename + '" style="animation-delay: ' + (i * 0.06) + 's;">' +
                         '<div class="card-glow"></div>' +
                         '<div class="card-reactive"></div>' +
                         '<div class="card-inner">' +
                             '<div class="device-img-wrap">' +
-                                '<img data-src="' + imgSrc + '" alt="' + d.device_name + '" class="device-img" loading="lazy" onerror="this.style.display=\'none\'; this.nextElementSibling.classList.add(\'show\');">' +
+                                '<div class="device-img-skeleton shimmer"></div>' +
+                                '<img data-src="' + imgSrc + '" alt="' + d.device_name + '" class="device-img">' +
                                 '<div class="device-img-fallback">&#128241;</div>' +
                                 '<div class="status-indicator ' + statusClass + '">' +
                                     '<div class="status-dot ' + statusClass + '"></div>' +
@@ -699,12 +715,30 @@
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
                             const img = entry.target;
-                            img.src = img.dataset.src;
-                            img.onload = () => { img.classList.add('loaded'); };
+                            const src = img.dataset.src;
+                            const wrap = img.closest('.device-img-wrap');
+                            const skeleton = wrap ? wrap.querySelector('.device-img-skeleton') : null;
+                            const fallback = wrap ? wrap.querySelector('.device-img-fallback') : null;
+
+                            img.onload = function() {
+                                img.classList.add('loaded');
+                                if (skeleton) skeleton.classList.add('hidden');
+                                if (fallback) fallback.classList.remove('visible');
+                                console.log('[EuclidOS] Image loaded:', src);
+                            };
+
+                            img.onerror = function() {
+                                console.warn('[EuclidOS] Image failed:', src);
+                                img.style.display = 'none';
+                                if (skeleton) skeleton.classList.add('hidden');
+                                if (fallback) fallback.classList.add('visible');
+                            };
+
+                            img.src = src;
                             imgObserver.unobserve(img);
                         }
                     });
-                }, { rootMargin: '100px' });
+                }, { rootMargin: '150px' });
                 lazyImages.forEach(img => imgObserver.observe(img));
 
                 // Animate cards in
@@ -731,10 +765,10 @@
                         }
                         const x = (e.clientX - rect.left) / rect.width - 0.5;
                         const y = (e.clientY - rect.top) / rect.height - 0.5;
-                        card.style.transform = 'perspective(900px) rotateY(' + (x * 5) + 'deg) rotateX(' + (-y * 5) + 'deg) translateY(-8px)';
+                        card.style.transform = 'perspective(800px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 6) + 'deg) scale(1.02)';
                     });
                     card.addEventListener('mouseleave', () => {
-                        gsap.to(card, { rotateY: 0, rotateX: 0, y: 0, duration: 0.6, ease: "power2.out",
+                        gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out",
                             onComplete: () => { card.style.transform = ''; }
                         });
                     });

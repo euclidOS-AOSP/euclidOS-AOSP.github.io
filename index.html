@@ -1262,7 +1262,7 @@
             const cta = document.getElementById('lineup-cta');
             if (!grid) return;
 
-            const BASE = 'official_devices_temp';
+            const BASE = 'https://raw.githubusercontent.com/euclid-Devices/official_devices/refs/heads/16';
             let devices = [];
             try {
                 const res = await fetch(BASE + '/devices.json');
