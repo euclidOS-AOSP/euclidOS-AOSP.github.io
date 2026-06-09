@@ -42,10 +42,10 @@
             --accent-cyan: #00f0ff;
             --text-muted: #8888a0;
             --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+            --font-display: 'Space Grotesk', sans-serif;
         }
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
-            margin: 0; padding: 0;
             background-color: var(--bg-main);
             color: #f0f0f5;
             font-family: 'Inter', sans-serif;
@@ -68,25 +68,16 @@
             z-index: 10001; width: 0%;
             box-shadow: 0 0 12px var(--clr-primary);
         }
+
+        /* ─── Glass ─── */
         .glass {
             background: rgba(10, 10, 20, 0.6);
             backdrop-filter: blur(24px) saturate(180%);
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             border: 1px solid var(--glass-border);
         }
-        .glass-card {
-            background: rgba(16, 16, 30, 0.5);
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
-            border: 1px solid var(--glass-border);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
-            transition: all 0.5s var(--ease-out);
-        }
-        .glass-card:hover {
-            border-color: var(--glass-border-hover);
-            box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 40px var(--clr-primary-dim), inset 0 1px 0 rgba(255,255,255,0.08);
-            transform: translateY(-4px);
-        }
+
+        /* ─── Ambient ─── */
         #ambient-bg {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 0; pointer-events: none; overflow: hidden;
@@ -105,6 +96,8 @@
             100% { transform: translate(-20px, 20px) scale(1); }
         }
         .reveal-section { opacity: 0; transform: translateY(30px); }
+
+        /* ─── Navbar ─── */
         #navbar { transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out); will-change: transform; }
         #nav-glass { transition: opacity 0.4s var(--ease-out); }
         .nav-link {
@@ -121,6 +114,8 @@
             transition: width 0.3s var(--ease-out);
         }
         .nav-link:hover::after { width: 16px; }
+
+        /* ─── Hamburger ─── */
         .ham-btn {
             width: 44px; height: 44px;
             display: flex; flex-direction: column;
@@ -151,6 +146,8 @@
             opacity: 0; transition: opacity 0.4s; pointer-events: none;
         }
         .ham-btn.ham-open .ham-glow { opacity: 1; }
+
+        /* ─── Mobile Menu ─── */
         .mobile-menu-overlay { position: fixed; inset: 0; pointer-events: none; }
         .mobile-menu-overlay.active { pointer-events: auto; }
         .menu-backdrop {
@@ -215,100 +212,287 @@
             -webkit-tap-highlight-color: transparent;
         }
         .menu-cta-btn:active { transform: scale(0.96) translateY(0); }
-        .tilt-card {
-            transform-style: preserve-3d;
-            transition: transform 0.15s linear;
-            will-change: transform;
-        }
-        .tilt-card .glow-border {
-            position: absolute; inset: -1px; border-radius: inherit;
-            background: conic-gradient(from 0deg, transparent, 60%, var(--clr-primary), transparent);
-            opacity: 0; transition: opacity 0.6s var(--ease-out); z-index: -1;
-        }
-        .tilt-card:hover .glow-border { opacity: 0.5; }
-        .magnetic-btn {
-            position: relative; overflow: hidden;
-            transition: transform 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out);
-        }
-        .magnetic-btn::before {
-            content: ''; position: absolute; top: 50%; left: 50%;
-            width: 0; height: 0; border-radius: 50%;
-            background: rgba(255,255,255,0.15); transform: translate(-50%, -50%);
-            transition: width 0.6s var(--ease-out), height 0.6s var(--ease-out);
-        }
-        .magnetic-btn:hover::before { width: 300%; height: 300%; }
+
+        /* ─── Selection ─── */
         ::selection { background: rgba(77, 120, 255, 0.3); color: white; }
 
-        /* Search & Filter */
-        .search-input {
-            background: rgba(16, 16, 30, 0.6);
-            border: 1px solid var(--glass-border);
+        /* ═══════════════ DEVICES PAGE ═══════════════ */
+
+        /* ─── Search & Filter Bar ─── */
+        .controls-glass {
+            background: rgba(10, 10, 22, 0.55);
+            backdrop-filter: blur(32px) saturate(200%);
+            -webkit-backdrop-filter: blur(32px) saturate(200%);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 1.5rem;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.35), 0 0 80px rgba(77,120,255,0.04), inset 0 1px 0 rgba(255,255,255,0.04);
+        }
+        .search-field {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 9999px;
-            padding: 12px 20px 12px 44px;
+            padding: 14px 20px 14px 48px;
             color: white;
             font-size: 14px;
             width: 100%;
             outline: none;
-            transition: border-color 0.3s, box-shadow 0.3s;
+            transition: all 0.4s var(--ease-out);
         }
-        .search-input:focus {
-            border-color: rgba(77, 120, 255, 0.4);
-            box-shadow: 0 0 20px rgba(77, 120, 255, 0.1);
+        .search-field:focus {
+            border-color: rgba(77,120,255,0.35);
+            box-shadow: 0 0 32px rgba(77,120,255,0.08), inset 0 0 20px rgba(77,120,255,0.03);
+            background: rgba(255,255,255,0.05);
         }
-        .search-input::placeholder { color: rgba(255,255,255,0.3); }
-        .filter-btn {
-            padding: 8px 16px;
+        .search-field::placeholder { color: rgba(255,255,255,0.25); }
+        .filter-pill {
+            padding: 8px 18px;
             border-radius: 9999px;
-            font-size: 12px;
-            font-weight: 500;
-            border: 1px solid var(--glass-border);
-            background: rgba(16, 16, 30, 0.4);
-            color: rgba(255,255,255,0.5);
+            font-size: 12px; font-weight: 600;
+            border: 1px solid rgba(255,255,255,0.06);
+            background: rgba(255,255,255,0.02);
+            color: rgba(255,255,255,0.4);
             cursor: pointer;
-            transition: all 0.3s var(--ease-out);
+            transition: all 0.35s var(--ease-out);
+            letter-spacing: 0.02em;
+            user-select: none;
         }
-        .filter-btn:hover {
-            border-color: var(--glass-border-hover);
-            color: white;
+        .filter-pill:hover {
+            border-color: rgba(255,255,255,0.12);
+            color: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.04);
         }
-        .filter-btn.active {
-            background: rgba(77, 120, 255, 0.15);
-            border-color: rgba(77, 120, 255, 0.4);
-            color: var(--clr-primary);
+        .filter-pill.active {
+            background: rgba(77,120,255,0.12);
+            border-color: rgba(77,120,255,0.35);
+            color: #4d78ff;
+            box-shadow: 0 0 20px rgba(77,120,255,0.08);
         }
         .sort-select {
-            background: rgba(16, 16, 30, 0.6);
-            border: 1px solid var(--glass-border);
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.06);
             border-radius: 12px;
-            padding: 10px 16px;
-            color: white;
-            font-size: 13px;
-            outline: none;
-            cursor: pointer;
+            padding: 10px 36px 10px 14px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px; font-weight: 500;
+            outline: none; cursor: pointer;
             appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.4)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-image: url("data:image/svg+xml,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='rgba(255,255,255,0.35)' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
             background-position: right 12px center;
-            padding-right: 32px;
+            transition: all 0.3s var(--ease-out);
         }
-        .sort-select option { background: #0c0c18; }
+        .sort-select:hover { border-color: rgba(255,255,255,0.12); }
+        .sort-select option { background: #0a0a16; color: white; }
+
+        /* ─── Device Card ─── */
         .device-card {
-            opacity: 0;
-            transform: translateY(20px);
+            position: relative;
+            background: rgba(12, 12, 24, 0.6);
+            backdrop-filter: blur(24px) saturate(170%);
+            -webkit-backdrop-filter: blur(24px) saturate(170%);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 1.5rem;
+            overflow: hidden;
+            transition: all 0.6s var(--ease-out);
+            opacity: 0; transform: translateY(30px);
+            text-decoration: none; color: inherit; display: block;
         }
+        .device-card:hover {
+            border-color: rgba(255,255,255,0.12);
+            transform: translateY(-8px) !important;
+            box-shadow: 0 32px 80px rgba(0,0,0,0.5), 0 0 100px rgba(77,120,255,0.06);
+        }
+        .device-card .card-glow {
+            position: absolute; inset: -1px; border-radius: inherit;
+            background: conic-gradient(from 0deg, transparent, 35%, var(--clr-primary), 50%, transparent);
+            opacity: 0; transition: opacity 0.7s var(--ease-out);
+            z-index: 0;
+        }
+        .device-card:hover .card-glow { opacity: 0.3; }
+        .device-card .card-reactive {
+            position: absolute; inset: 0; border-radius: inherit;
+            pointer-events: none; z-index: 1;
+            opacity: 0; transition: opacity 0.5s;
+            background: radial-gradient(circle 280px at var(--mx, 50%) var(--my, 50%), rgba(77,120,255,0.12), transparent);
+        }
+        .device-card:hover .card-reactive { opacity: 1; }
+        .device-card .card-inner {
+            position: relative; z-index: 2;
+        }
+
+        /* ─── Device Image Area ─── */
+        .device-img-wrap {
+            position: relative;
+            height: 200px;
+            background: linear-gradient(180deg, rgba(77,120,255,0.03) 0%, transparent 100%);
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .device-img-wrap::after {
+            content: '';
+            position: absolute; bottom: 0; left: 0; right: 0; height: 60px;
+            background: linear-gradient(180deg, transparent, rgba(12,12,24,0.6));
+            pointer-events: none;
+        }
+        .device-img {
+            max-width: 70%; max-height: 85%;
+            object-fit: contain;
+            opacity: 0; transform: scale(0.92);
+            transition: all 0.7s var(--ease-out);
+            filter: drop-shadow(0 12px 32px rgba(0,0,0,0.4));
+        }
+        .device-img.loaded { opacity: 1; transform: scale(1); }
+        .device-card:hover .device-img { transform: scale(1.04); filter: drop-shadow(0 16px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 20px rgba(77,120,255,0.15)); }
+        .device-img-fallback {
+            display: none;
+            width: 80px; height: 80px;
+            background: linear-gradient(135deg, rgba(77,120,255,0.1), rgba(0,240,255,0.05));
+            border-radius: 1.25rem;
+            border: 1px solid rgba(255,255,255,0.06);
+            align-items: center; justify-content: center;
+            font-size: 2.5rem;
+        }
+        .device-img-fallback.show { display: flex; }
+
+        /* ─── Status Indicator ─── */
+        .status-indicator {
+            position: absolute; top: 16px; right: 16px; z-index: 5;
+            display: flex; align-items: center; gap: 6px;
+            padding: 6px 12px; border-radius: 9999px;
+            backdrop-filter: blur(12px);
+            font-size: 10px; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.1em;
+        }
+        .status-indicator.active {
+            background: rgba(34,197,94,0.1);
+            border: 1px solid rgba(34,197,94,0.25);
+            color: #22c55e;
+        }
+        .status-indicator.inactive {
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            color: rgba(255,255,255,0.4);
+        }
+        .status-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+        }
+        .status-dot.active {
+            background: #22c55e;
+            box-shadow: 0 0 8px rgba(34,197,94,0.6);
+            animation: dotPulse 2s ease-in-out infinite;
+        }
+        .status-dot.inactive { background: rgba(255,255,255,0.3); }
+        @keyframes dotPulse {
+            0%, 100% { opacity: 1; box-shadow: 0 0 8px rgba(34,197,94,0.6); }
+            50% { opacity: 0.6; box-shadow: 0 0 16px rgba(34,197,94,0.4); }
+        }
+
+        /* ─── Card Body ─── */
+        .device-info {
+            padding: 1.5rem;
+        }
+        .device-name {
+            font-family: var(--font-display);
+            font-size: 1.15rem; font-weight: 700;
+            color: white; margin-bottom: 4px;
+            line-height: 1.3;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        }
+        .device-codename {
+            font-size: 11px; font-weight: 600;
+            color: rgba(255,255,255,0.25);
+            font-family: 'SF Mono', 'Fira Code', monospace;
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+        .device-meta {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+            margin-bottom: 20px;
+        }
+        .meta-item {
+            display: flex; flex-direction: column; gap: 3px;
+        }
+        .meta-label {
+            font-size: 10px; font-weight: 600;
+            text-transform: uppercase; letter-spacing: 0.1em;
+            color: rgba(255,255,255,0.25);
+        }
+        .meta-value {
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.8);
+        }
+        .device-action {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            width: 100%; padding: 12px;
+            border-radius: 12px;
+            font-size: 13px; font-weight: 600;
+            background: linear-gradient(135deg, rgba(77,120,255,0.1), rgba(0,240,255,0.05));
+            border: 1px solid rgba(77,120,255,0.12);
+            color: #4d78ff;
+            transition: all 0.4s var(--ease-out);
+        }
+        .device-card:hover .device-action {
+            background: linear-gradient(135deg, #4d78ff, #3b6bef);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 8px 24px rgba(77,120,255,0.25);
+        }
+        .device-action svg {
+            transition: transform 0.3s var(--ease-out);
+        }
+        .device-card:hover .device-action svg {
+            transform: translateX(3px);
+        }
+
+        /* ─── Skeleton ─── */
+        .skeleton-card {
+            border-radius: 1.5rem;
+            overflow: hidden;
+            background: rgba(12, 12, 24, 0.5);
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ─── Empty State ─── */
         .empty-state {
             text-align: center;
-            padding: 4rem 2rem;
+            padding: 5rem 2rem;
             color: var(--text-muted);
+        }
+
+        /* ─── Stats Row ─── */
+        .stats-row {
+            display: flex; align-items: center; gap: 24px;
+            flex-wrap: wrap;
+        }
+        .stat-chip {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 6px 14px; border-radius: 9999px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            font-size: 12px; font-weight: 500;
+            color: rgba(255,255,255,0.5);
+        }
+        .stat-chip .stat-num {
+            font-family: var(--font-display); font-weight: 700;
+            color: rgba(255,255,255,0.8);
         }
     </style>
 </head>
 <body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
 
     <div id="ambient-bg">
-        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(77,120,255,0.4) 0%, transparent 70%); top: -200px; left: -100px;"></div>
-        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(108,92,231,0.3) 0%, transparent 70%); top: 30%; right: -200px; animation-delay: -8s;"></div>
-        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,123,255,0.25) 0%, transparent 70%); top: 60%; left: -100px; animation-delay: -14s;"></div>
+        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(77,120,255,0.35) 0%, transparent 70%); top: -200px; left: -100px;"></div>
+        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(108,92,231,0.25) 0%, transparent 70%); top: 30%; right: -200px; animation-delay: -8s;"></div>
+        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,123,255,0.2) 0%, transparent 70%); top: 60%; left: -100px; animation-delay: -14s;"></div>
     </div>
     <div id="noise-overlay"></div>
     <div id="scroll-progress"></div>
@@ -321,23 +505,25 @@
         'use strict';
 
         const app = document.getElementById('app');
+        const BASE = 'official_devices_temp';
+        const IMG_BASE = BASE + '/device_img';
 
         async function init() {
             app.innerHTML = `
                 ${EuclidApp.buildNavbar('devices')}
                 ${EuclidApp.buildMobileMenu('devices')}
 
-                <header class="relative pt-32 pb-20 px-6 text-center overflow-hidden">
+                <header class="relative pt-32 pb-16 md:pt-40 md:pb-20 px-6 text-center overflow-hidden">
                     <div class="absolute inset-0 z-0">
-                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-euclid/10 rounded-full blur-[120px] pointer-events-none"></div>
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-euclid/8 rounded-full blur-[150px] pointer-events-none"></div>
                     </div>
                     <div class="relative z-10 max-w-3xl mx-auto">
-                        <div class="inline-flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-2 mb-8 reveal-section">
-                            <span class="relative flex h-2.5 w-2.5">
+                        <div class="inline-flex items-center gap-2.5 bg-white/[0.03] border border-white/[0.06] rounded-full px-5 py-2.5 mb-8 reveal-section">
+                            <span class="relative flex h-2 w-2">
                                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
+                                <span class="relative inline-flex rounded-full h-2 w-2 bg-green-400"></span>
                             </span>
-                            <span class="text-sm text-gray-300 font-medium tracking-wide">ALL DEVICES</span>
+                            <span class="text-xs text-gray-400 font-semibold tracking-[0.15em] uppercase">Official Devices</span>
                         </div>
                         <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 reveal-section leading-[1.05]">
                             Supported <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">Devices.</span>
@@ -345,37 +531,47 @@
                         <p class="text-base md:text-lg text-euclid-muted max-w-xl mx-auto mb-10 reveal-section leading-relaxed">
                             Every device EuclidOS supports. Browse, search, and find your perfect build.
                         </p>
+                        <div id="stats-row" class="stats-row justify-center reveal-section" style="opacity:0; transform:translateY(15px);"></div>
                     </div>
                 </header>
 
                 <main class="max-w-7xl mx-auto px-6 pb-28 relative z-10">
                     <div id="controls" class="reveal-section mb-10">
-                        <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
-                            <div class="relative w-full md:w-96">
-                                <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
-                                <input type="text" id="search-input" class="search-input" placeholder="Search by name, codename, or vendor...">
+                        <div class="controls-glass p-5 md:p-6">
+                            <div class="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-4">
+                                <div class="relative w-full lg:w-96">
+                                    <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path stroke-linecap="round" d="M21 21l-4.35-4.35"/></svg>
+                                    <input type="text" id="search-input" class="search-field" placeholder="Search by name, codename, or vendor...">
+                                </div>
+                                <div class="flex flex-wrap gap-2 items-center">
+                                    <select id="sort-select" class="sort-select">
+                                        <option value="name-asc">Name A-Z</option>
+                                        <option value="name-desc">Name Z-A</option>
+                                        <option value="vendor-asc">Vendor A-Z</option>
+                                        <option value="status-desc">Active First</option>
+                                        <option value="status-asc">Inactive First</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="flex flex-wrap gap-2 items-center">
-                                <button class="filter-btn active" data-filter="all">All</button>
-                                <button class="filter-btn" data-filter="active">Active</button>
-                                <button class="filter-btn" data-filter="inactive">Inactive</button>
-                                <div class="w-px h-5 bg-white/10 mx-1 hidden md:block"></div>
-                                <select id="sort-select" class="sort-select">
-                                    <option value="name-asc">Name A-Z</option>
-                                    <option value="name-desc">Name Z-A</option>
-                                    <option value="vendor-asc">Vendor A-Z</option>
-                                    <option value="status-desc">Active First</option>
-                                    <option value="status-asc">Inactive First</option>
-                                </select>
+                                <span class="text-[10px] font-semibold text-gray-500 uppercase tracking-[0.15em] mr-1">Status</span>
+                                <button class="filter-pill active" data-filter="all">All</button>
+                                <button class="filter-pill" data-filter="active">Active</button>
+                                <button class="filter-pill" data-filter="inactive">Inactive</button>
+                                <div class="w-px h-4 bg-white/[0.06] mx-2 hidden md:block"></div>
+                                <div id="vendor-filters" class="flex flex-wrap gap-2 items-center"></div>
                             </div>
                         </div>
-                        <div id="vendor-filters" class="flex flex-wrap gap-2 mt-3"></div>
                     </div>
 
-                    <div id="device-count" class="text-xs text-gray-500 mb-5 font-mono"></div>
-                    <div id="device-grid" class="grid md:grid-cols-2 gap-5 max-w-5xl mx-auto"></div>
+                    <div id="device-count" class="text-xs text-gray-500 mb-6 font-mono"></div>
+
+                    <div id="device-grid" class="grid md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-6xl mx-auto"></div>
+
                     <div id="empty-state" class="empty-state hidden">
-                        <div class="text-5xl mb-4 opacity-30">&#128241;</div>
+                        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-white/[0.03] border border-dashed border-white/[0.08] flex items-center justify-center">
+                            <svg width="32" height="32" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" class="text-gray-600"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"/></svg>
+                        </div>
                         <h3 class="text-xl font-display font-bold text-gray-500 mb-2">No devices found</h3>
                         <p class="text-sm text-gray-600">Try adjusting your search or filters.</p>
                     </div>
@@ -391,11 +587,21 @@
             let searchQuery = '';
             let sortBy = 'name-asc';
 
-            // Vendor filter buttons
+            // Stats
+            const activeCount = devices.filter(d => d.active).length;
+            const statsRow = document.getElementById('stats-row');
+            if (statsRow) {
+                statsRow.innerHTML = '<div class="stat-chip"><span class="stat-num">' + devices.length + '</span> Devices</div>' +
+                    '<div class="stat-chip"><span class="stat-num">' + activeCount + '</span> Active</div>' +
+                    '<div class="stat-chip"><span class="stat-num">' + vendors.length + '</span> Vendors</div>';
+                gsap.to(statsRow, { opacity: 1, y: 0, duration: 0.6, ease: "power3.out", delay: 0.5 });
+            }
+
+            // Vendor filters
             const vendorContainer = document.getElementById('vendor-filters');
             vendors.forEach(v => {
                 const btn = document.createElement('button');
-                btn.className = 'filter-btn';
+                btn.className = 'filter-pill';
                 btn.dataset.vendor = v;
                 btn.textContent = v;
                 btn.addEventListener('click', () => {
@@ -403,7 +609,7 @@
                         activeVendor = null;
                         btn.classList.remove('active');
                     } else {
-                        vendorContainer.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        vendorContainer.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
                         activeVendor = v;
                         btn.classList.add('active');
                     }
@@ -414,12 +620,9 @@
 
             function getFilteredDevices() {
                 let filtered = [...devices];
-
                 if (activeFilter === 'active') filtered = filtered.filter(d => d.active);
                 else if (activeFilter === 'inactive') filtered = filtered.filter(d => !d.active);
-
                 if (activeVendor) filtered = filtered.filter(d => d.vendor === activeVendor);
-
                 if (searchQuery) {
                     const q = searchQuery.toLowerCase();
                     filtered = filtered.filter(d =>
@@ -429,7 +632,6 @@
                         d.maintainer.toLowerCase().includes(q)
                     );
                 }
-
                 filtered.sort((a, b) => {
                     switch (sortBy) {
                         case 'name-asc': return a.device_name.localeCompare(b.device_name);
@@ -440,7 +642,6 @@
                         default: return 0;
                     }
                 });
-
                 return filtered;
             }
 
@@ -450,7 +651,7 @@
                 const count = document.getElementById('device-count');
                 const filtered = getFilteredDevices();
 
-                count.textContent = `${filtered.length} device${filtered.length !== 1 ? 's' : ''} found`;
+                count.textContent = filtered.length + ' device' + (filtered.length !== 1 ? 's' : '') + ' found';
 
                 if (filtered.length === 0) {
                     grid.innerHTML = '';
@@ -459,63 +660,93 @@
                 }
 
                 empty.classList.add('hidden');
-                grid.innerHTML = filtered.map((d, i) => `
-                    <a href="device.html?codename=${d.codename}" class="device-card glass-card rounded-[2rem] p-7 flex flex-col relative overflow-hidden group tilt-card no-underline" style="animation-delay: ${i * 0.05}s;">
-                        <div class="glow-border group-hover:opacity-50"></div>
-                        <div class="flex items-start gap-4 mb-5 relative">
-                            <div class="w-14 h-14 bg-gradient-to-br from-euclid/15 to-white/[0.03] rounded-2xl flex items-center justify-center border border-white/[0.06] group-hover:border-euclid/25 transition-all duration-300 relative flex-shrink-0">
-                                <span class="text-2xl">&#128241;</span>
-                                ${d.active ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[#10101e] shadow-lg shadow-green-400/30"></div>' : '<div class="absolute -top-1 -right-1 w-3 h-3 bg-red-400/70 rounded-full border-2 border-[#10101e]"></div>'}
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <h3 class="text-lg font-bold text-white mb-1 truncate">${d.device_name}</h3>
-                                <p class="text-xs text-gray-500 font-mono">${d.codename}</p>
-                            </div>
-                            ${EuclidApp.statusBadge(d.active)}
-                        </div>
-                        <div class="space-y-2 mb-5 flex-1 relative">
-                            <div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]">
-                                <span class="text-gray-500">Vendor</span>
-                                <span class="text-white/80">${d.vendor}</span>
-                            </div>
-                            <div class="flex justify-between text-xs py-1.5 border-b border-white/[0.04]">
-                                <span class="text-gray-500">Maintainer</span>
-                                <span class="text-white/80">${d.maintainer}</span>
-                            </div>
-                        </div>
-                        <div class="relative">
-                            <span class="w-full py-3 bg-gradient-to-r from-euclid/20 to-blue-600/20 text-euclid font-semibold rounded-xl text-center text-sm border border-euclid/15 group-hover:from-euclid group-hover:to-blue-600 group-hover:text-white group-hover:border-transparent group-hover:shadow-lg group-hover:shadow-euclid/15 transition-all duration-300 flex items-center justify-center gap-2">
-                                View Details
-                                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                            </span>
-                        </div>
-                    </a>
-                `).join('');
+                grid.innerHTML = filtered.map((d, i) => {
+                    const imgSrc = IMG_BASE + '/' + d.codename + '.png';
+                    const statusClass = d.active ? 'active' : 'inactive';
+                    const statusText = d.active ? 'Active' : 'Inactive';
+
+                    return '<a href="device.html?codename=' + d.codename + '" class="device-card" style="animation-delay: ' + (i * 0.06) + 's;">' +
+                        '<div class="card-glow"></div>' +
+                        '<div class="card-reactive"></div>' +
+                        '<div class="card-inner">' +
+                            '<div class="device-img-wrap">' +
+                                '<img data-src="' + imgSrc + '" alt="' + d.device_name + '" class="device-img" loading="lazy" onerror="this.style.display=\'none\'; this.nextElementSibling.classList.add(\'show\');">' +
+                                '<div class="device-img-fallback">&#128241;</div>' +
+                                '<div class="status-indicator ' + statusClass + '">' +
+                                    '<div class="status-dot ' + statusClass + '"></div>' +
+                                    statusText +
+                                '</div>' +
+                            '</div>' +
+                            '<div class="device-info">' +
+                                '<div class="device-name">' + d.device_name + '</div>' +
+                                '<div class="device-codename">' + d.codename + '</div>' +
+                                '<div class="device-meta">' +
+                                    '<div class="meta-item"><span class="meta-label">Vendor</span><span class="meta-value">' + d.vendor + '</span></div>' +
+                                    '<div class="meta-item"><span class="meta-label">Maintainer</span><span class="meta-value">' + d.maintainer + '</span></div>' +
+                                '</div>' +
+                                '<div class="device-action">' +
+                                    'View Details' +
+                                    '<svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>' +
+                                '</div>' +
+                            '</div>' +
+                        '</div>' +
+                    '</a>';
+                }).join('');
+
+                // Lazy load images with intersection observer
+                const lazyImages = grid.querySelectorAll('img[data-src]');
+                const imgObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.src = img.dataset.src;
+                            img.onload = () => { img.classList.add('loaded'); };
+                            imgObserver.unobserve(img);
+                        }
+                    });
+                }, { rootMargin: '100px' });
+                lazyImages.forEach(img => imgObserver.observe(img));
 
                 // Animate cards in
                 requestAnimationFrame(() => {
                     document.querySelectorAll('.device-card').forEach((card, i) => {
                         gsap.to(card, {
-                            opacity: 1, y: 0, duration: 0.5,
-                            delay: i * 0.06,
+                            opacity: 1, y: 0, duration: 0.6,
+                            delay: i * 0.07,
                             ease: "power3.out"
                         });
                     });
                 });
 
-                // Re-init tilt on new cards
-                document.querySelectorAll('.tilt-card').forEach(card => {
+                // Tilt + reactive glow
+                document.querySelectorAll('.device-card').forEach(card => {
+                    const reactive = card.querySelector('.card-reactive');
                     card.addEventListener('mousemove', (e) => {
                         const rect = card.getBoundingClientRect();
+                        const mx = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                        const my = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+                        if (reactive) {
+                            reactive.style.setProperty('--mx', mx + '%');
+                            reactive.style.setProperty('--my', my + '%');
+                        }
                         const x = (e.clientX - rect.left) / rect.width - 0.5;
                         const y = (e.clientY - rect.top) / rect.height - 0.5;
-                        card.style.transform = `perspective(800px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg) scale(1.01)`;
+                        card.style.transform = 'perspective(900px) rotateY(' + (x * 5) + 'deg) rotateX(' + (-y * 5) + 'deg) translateY(-8px)';
                     });
                     card.addEventListener('mouseleave', () => {
-                        gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out" });
-                        card.style.transform = '';
+                        gsap.to(card, { rotateY: 0, rotateX: 0, y: 0, duration: 0.6, ease: "power2.out",
+                            onComplete: () => { card.style.transform = ''; }
+                        });
                     });
                 });
+
+                // Custom cursor hover
+                if (window.innerWidth > 768) {
+                    document.querySelectorAll('.device-card').forEach(el => {
+                        el.addEventListener('mouseenter', () => { const r = document.getElementById('cursor-ring'); if (r) r.classList.add('hovering'); });
+                        el.addEventListener('mouseleave', () => { const r = document.getElementById('cursor-ring'); if (r) r.classList.remove('hovering'); });
+                    });
+                }
             }
 
             // Event listeners
@@ -524,9 +755,9 @@
                 renderDevices();
             });
 
-            document.querySelectorAll('#controls .filter-btn[data-filter]').forEach(btn => {
+            document.querySelectorAll('#controls .filter-pill[data-filter]').forEach(btn => {
                 btn.addEventListener('click', () => {
-                    document.querySelectorAll('#controls .filter-btn[data-filter]').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('#controls .filter-pill[data-filter]').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     activeFilter = btn.dataset.filter;
                     renderDevices();
