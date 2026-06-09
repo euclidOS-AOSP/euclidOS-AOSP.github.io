@@ -719,6 +719,42 @@
             background: rgba(77, 120, 255, 0.3);
             color: white;
         }
+
+        /* ─── Performance: Reduced Motion ─── */
+        .perf-reduced *, .perf-reduced *::before, .perf-reduced *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+
+        /* ─── Performance: Low-End Device Optimizations ─── */
+        .perf-low .aura-blob {
+            filter: blur(80px) !important;
+            opacity: 0.7;
+        }
+        .perf-low .glass {
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+        }
+        .perf-low .glass-card {
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+        }
+        .perf-low .contributor-card {
+            backdrop-filter: blur(14px) saturate(140%);
+            -webkit-backdrop-filter: blur(14px) saturate(140%);
+        }
+        .perf-low #noise-overlay { display: none; }
+        .perf-low .carousel-slide { filter: none; }
+        .perf-low .carousel-slide.dim { opacity: 0.7; }
+        .perf-low .carousel-slide.far { opacity: 0.45; }
+        .perf-low .menu-ambient { filter: blur(60px); }
+
+        /* ─── Performance: Viewport-based Animation Pause ─── */
+        [data-animate].out-viewport { animation-play-state: paused !important; }
+        [data-animate].in-viewport { animation-play-state: running !important; }
+        .contributor-card.out-viewport { animation-play-state: paused !important; }
+        .contrib-particle.out-viewport { animation-play-state: paused !important; }
     </style>
 </head>
 <body class="dark-theme" style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
@@ -749,7 +785,7 @@
         <div class="relative max-w-7xl mx-auto px-5 md:px-6 py-3 md:py-4 flex items-center justify-between">
             <a href="#hero" class="flex items-center gap-2.5 group">
                 <div class="relative w-9 h-9 md:w-10 md:h-10 flex-shrink-0">
-                    <img src="assets/screenshots/logo.jpeg" alt="EuclidOS Logo" class="w-full h-full rounded-lg border border-white/10 group-hover:border-euclid/40 transition duration-300">
+                    <img src="assets/screenshots/logo.jpeg" alt="EuclidOS Logo" class="w-full h-full rounded-lg border border-white/10 group-hover:border-euclid/40 transition duration-300" decoding="async">
                     <div class="absolute inset-0 rounded-lg bg-euclid/20 blur-lg opacity-0 group-hover:opacity-100 transition duration-500"></div>
                 </div>
                 <span class="text-lg md:text-xl font-display font-bold text-white tracking-tight">EUCLID<span class="text-euclid">OS</span></span>
@@ -932,7 +968,7 @@
                 <div class="relative reveal-section">
                     <div class="absolute -inset-6 bg-gradient-to-br from-euclid/15 to-cyan-500/[0.07] rounded-[2.5rem] blur-3xl pointer-events-none"></div>
                     <div class="glass-card rounded-[1.8rem] p-1 relative overflow-hidden">
-                        <img src="assets/screenshots/ss1.jpeg" alt="EuclidOS Interface" class="w-full h-auto rounded-[1.5rem] object-cover aspect-[9/16] md:aspect-[4/3]" loading="lazy">
+                        <img src="assets/screenshots/ss1.jpeg" alt="EuclidOS Interface" class="w-full h-auto rounded-[1.5rem] object-cover aspect-[9/16] md:aspect-[4/3]" loading="lazy" decoding="async">
                         <div class="absolute inset-0 bg-gradient-to-t from-[#03030a]/70 via-transparent to-transparent rounded-[1.8rem]"></div>
                         <div class="absolute bottom-5 left-5">
                             <p class="text-xs font-mono text-euclid/70 tracking-wider">v3.2 INTERFACE</p>
@@ -1132,7 +1168,7 @@
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-10 mb-14">
                 <div class="sm:col-span-2 lg:col-span-2">
                     <div class="flex items-center gap-2.5 mb-5">
-                        <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-9 h-9 rounded-lg border border-white/10">
+                        <img src="assets/screenshots/logo.jpeg" alt="Logo" class="w-9 h-9 rounded-lg border border-white/10" decoding="async">
                         <span class="text-lg font-display font-bold text-white">EUCLID<span class="text-euclid">OS</span></span>
                     </div>
                     <p class="text-sm text-euclid-muted max-w-sm leading-relaxed mb-5">Geometry in Motion. A refined AOSP-based operating system built for precision and performance.</p>
@@ -1195,6 +1231,33 @@
 
         // ─── GSAP Setup ───
         gsap.registerPlugin(ScrollTrigger);
+
+        // ─── Performance: Device Detection & Viewport Observer ───
+        if (typeof Perf !== 'undefined') {
+            Perf.init();
+            Perf.viewportObserver('[data-animate], .contributor-card, .contrib-particle, .aura-blob', { margin: '200px' });
+        } else {
+            // Fallback: detect low-end inline
+            (function() {
+                var score = 0;
+                if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) score += 2;
+                if (navigator.deviceMemory && navigator.deviceMemory < 4) score += 2;
+                if (navigator.connection && navigator.connection.saveData) score += 2;
+                if (score >= 3) {
+                    document.documentElement.classList.add('perf-low');
+                    document.querySelectorAll('.aura-blob').forEach(function(b) { b.style.filter = 'blur(80px)'; });
+                    var n = document.getElementById('noise-overlay'); if (n) n.style.display = 'none';
+                }
+                if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('perf-reduced');
+            })();
+            // Viewport observer fallback
+            (function() {
+                var obs = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(e) { e.target.classList.toggle('in-viewport', e.isIntersecting); });
+                }, { rootMargin: '200px', threshold: 0 });
+                document.querySelectorAll('.contributor-card, .contrib-particle, .aura-blob').forEach(function(el) { obs.observe(el); });
+            })();
+        }
 
         // ─── Navbar ───
         const navbar = document.getElementById('navbar');
@@ -1344,15 +1407,21 @@
             scrollTrigger: { trigger: '#hero', start: 'top top', end: 'bottom top', scrub: 1.2 }
         });
 
-        // ─── Hero Glow Follows Mouse ───
+        // ─── Hero Glow Follows Mouse (Optimized: throttled) ───
         const heroGlow = document.getElementById('hero-glow');
         const heroSection = document.getElementById('hero');
+        let heroGlowTicking = false;
         heroSection.addEventListener('mousemove', (e) => {
-            const rect = heroSection.getBoundingClientRect();
-            const x = ((e.clientX - rect.left) / rect.width - 0.5) * 30;
-            const y = ((e.clientY - rect.top) / rect.height - 0.5) * 30;
-            if (heroGlow) gsap.to(heroGlow, { x, y, duration: 1, ease: "power2.out" });
-        });
+            if (heroGlowTicking) return;
+            heroGlowTicking = true;
+            requestAnimationFrame(() => {
+                const rect = heroSection.getBoundingClientRect();
+                const x = ((e.clientX - rect.left) / rect.width - 0.5) * 30;
+                const y = ((e.clientY - rect.top) / rect.height - 0.5) * 30;
+                if (heroGlow) gsap.to(heroGlow, { x, y, duration: 1, ease: "power2.out" });
+                heroGlowTicking = false;
+            });
+        }, { passive: true });
 
         // ─── Scroll Reveal ───
         document.querySelectorAll('.reveal-section').forEach((el) => {
@@ -1363,14 +1432,20 @@
             });
         });
 
-        // ─── 3D Tilt Cards ───
+        // ─── 3D Tilt Cards (Optimized: throttled RAF) ───
         document.querySelectorAll('.tilt-card').forEach(card => {
+            let tiltTicking = false;
             card.addEventListener('mousemove', (e) => {
-                const rect = card.getBoundingClientRect();
-                const x = (e.clientX - rect.left) / rect.width - 0.5;
-                const y = (e.clientY - rect.top) / rect.height - 0.5;
-                card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
-            });
+                if (tiltTicking) return;
+                tiltTicking = true;
+                requestAnimationFrame(() => {
+                    const rect = card.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width - 0.5;
+                    const y = (e.clientY - rect.top) / rect.height - 0.5;
+                    card.style.transform = `perspective(800px) rotateY(${x * 8}deg) rotateX(${-y * 8}deg) scale(1.02)`;
+                    tiltTicking = false;
+                });
+            }, { passive: true });
             card.addEventListener('mouseleave', () => {
                 gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out" });
                 card.style.transform = '';
@@ -1425,7 +1500,7 @@
                     '<div class="glow-border group-hover:opacity-50"></div>' +
                     '<div class="lineup-img-wrap relative mx-auto mb-5">' +
                         '<div class="lineup-img-skeleton shimmer"></div>' +
-                        '<img data-src="' + imgSrc + '" alt="' + d.device_name + '" class="lineup-device-img">' +
+                        '<img data-src="' + imgSrc + '" alt="' + d.device_name + '" class="lineup-device-img" decoding="async">' +
                         '<div class="lineup-img-fallback">&#128241;</div>' +
                         (d.active ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-green-400 rounded-full border-2 border-[#10101e] shadow-lg shadow-green-400/30 z-10"></div>' : '<div class="absolute -top-1 -right-1 w-3 h-3 bg-yellow-400/70 rounded-full border-2 border-[#10101e] z-10"></div>') +
                     '</div>' +
@@ -1486,14 +1561,20 @@
             }, { rootMargin: '100px' });
             lineupImages.forEach(img => lineupImgObserver.observe(img));
 
-            // Tilt on lineup cards
+            // Tilt on lineup cards (Optimized: throttled RAF)
             document.querySelectorAll('.lineup-card').forEach(card => {
+                let tiltTicking = false;
                 card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width - 0.5;
-                    const y = (e.clientY - rect.top) / rect.height - 0.5;
-                    card.style.transform = 'perspective(800px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 6) + 'deg) scale(1.02)';
-                });
+                    if (tiltTicking) return;
+                    tiltTicking = true;
+                    requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = (e.clientX - rect.left) / rect.width - 0.5;
+                        const y = (e.clientY - rect.top) / rect.height - 0.5;
+                        card.style.transform = 'perspective(800px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 6) + 'deg) scale(1.02)';
+                        tiltTicking = false;
+                    });
+                }, { passive: true });
                 card.addEventListener('mouseleave', () => {
                     gsap.to(card, { rotateY: 0, rotateX: 0, scale: 1, duration: 0.5, ease: "power2.out" });
                     card.style.transform = '';
@@ -1509,24 +1590,32 @@
             }
         })();
 
-        // ─── Custom Cursor ───
+        // ─── Custom Cursor (Optimized: throttled RAF) ───
         const cursorDot = document.getElementById('cursor-dot');
         const cursorRing = document.getElementById('cursor-ring');
         let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
+        let cursorActive = false;
 
         if (window.innerWidth > 768) {
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX; mouseY = e.clientY;
                 if (cursorDot) { cursorDot.style.left = mouseX + 'px'; cursorDot.style.top = mouseY + 'px'; }
-            });
+                if (!cursorActive) {
+                    cursorActive = true;
+                    requestAnimationFrame(animateCursor);
+                }
+            }, { passive: true });
 
             function animateCursor() {
                 ringX += (mouseX - ringX) * 0.12;
                 ringY += (mouseY - ringY) * 0.12;
                 if (cursorRing) { cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px'; }
-                requestAnimationFrame(animateCursor);
+                if (Math.abs(mouseX - ringX) > 0.5 || Math.abs(mouseY - ringY) > 0.5) {
+                    requestAnimationFrame(animateCursor);
+                } else {
+                    cursorActive = false;
+                }
             }
-            animateCursor();
 
             document.querySelectorAll('a, button, .magnetic-btn, .tilt-card, .carousel-slide').forEach(el => {
                 el.addEventListener('mouseenter', () => { if (cursorRing) cursorRing.classList.add('hovering'); });
@@ -1589,7 +1678,7 @@
                 slide.style.width = (100 / visibleSlides) + '%';
                 slide.innerHTML = `
                     <div class="slide-inner cursor-pointer" data-real-index="${((i - cloneCount) % totalReal + totalReal) % totalReal}">
-                        <img src="${img.src}" alt="${img.alt}" class="w-full h-auto block" loading="lazy" draggable="false">
+                        <img src="${img.src}" alt="${img.alt}" class="w-full h-auto block" loading="lazy" decoding="async" draggable="false">
                     </div>
                 `;
                 carouselTrack.appendChild(slide);
@@ -1811,7 +1900,7 @@
                     '<div class="card-glow-reactive"></div>' +
                     '<div class="card-content flex flex-col items-center text-center" style="padding: 2.5rem;">' +
                         '<div class="relative mb-6">' +
-                            '<img src="' + c.avatar + '" alt="' + c.name + '" class="contributor-avatar rounded-full" loading="lazy" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
+                            '<img src="' + c.avatar + '" alt="' + c.name + '" class="contributor-avatar rounded-full" loading="lazy" decoding="async" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';">' +
                             '<div class="contributor-avatar rounded-full bg-gradient-to-br from-euclid/20 to-cyan-500/10 items-center justify-center text-3xl font-display font-bold" style="display: none;">' + initial + '</div>' +
                             '<div class="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-green-400 border-[3px] border-[#0c0c18] rounded-full shadow-lg shadow-green-400/30"></div>' +
                         '</div>' +
@@ -1835,24 +1924,27 @@
                 });
             });
 
-            // Reactive glow + 3D tilt
+            // Reactive glow + 3D tilt (Optimized: throttled RAF)
             document.querySelectorAll('.contributor-card').forEach(card => {
                 const reactive = card.querySelector('.card-glow-reactive');
+                let cardTicking = false;
                 card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
-                    const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
-                    if (reactive) {
-                        reactive.style.setProperty('--mx', x + '%');
-                        reactive.style.setProperty('--my', y + '%');
-                    }
-                });
-                card.addEventListener('mousemove', (e) => {
-                    const rect = card.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width - 0.5;
-                    const y = (e.clientY - rect.top) / rect.height - 0.5;
-                    card.style.transform = 'perspective(800px) rotateY(' + (x * 6) + 'deg) rotateX(' + (-y * 6) + 'deg) translateY(-10px)';
-                });
+                    if (cardTicking) return;
+                    cardTicking = true;
+                    requestAnimationFrame(() => {
+                        const rect = card.getBoundingClientRect();
+                        const x = ((e.clientX - rect.left) / rect.width * 100).toFixed(1);
+                        const y = ((e.clientY - rect.top) / rect.height * 100).toFixed(1);
+                        if (reactive) {
+                            reactive.style.setProperty('--mx', x + '%');
+                            reactive.style.setProperty('--my', y + '%');
+                        }
+                        const rx = (e.clientX - rect.left) / rect.width - 0.5;
+                        const ry = (e.clientY - rect.top) / rect.height - 0.5;
+                        card.style.transform = 'perspective(800px) rotateY(' + (rx * 6) + 'deg) rotateX(' + (-ry * 6) + 'deg) translateY(-10px)';
+                        cardTicking = false;
+                    });
+                }, { passive: true });
                 card.addEventListener('mouseleave', () => {
                     gsap.to(card, { rotateY: 0, rotateX: 0, translateY: 0, duration: 0.6, ease: "power2.out",
                         onComplete: () => { card.style.transform = ''; }

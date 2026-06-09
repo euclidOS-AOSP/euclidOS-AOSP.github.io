@@ -313,6 +313,17 @@
         .menu-footer a { color: rgba(255,255,255,0.25); transition: color 0.3s; -webkit-tap-highlight-color: transparent; }
         .menu-footer a:hover { color: var(--clr-primary); }
         ::selection { background: rgba(77, 120, 255, 0.3); color: white; }
+
+        /* ─── Performance: Reduced Motion ─── */
+        .perf-reduced *, .perf-reduced *::before, .perf-reduced *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        .perf-low .aura-blob { filter: blur(80px) !important; opacity: 0.7; }
+        .perf-low .glass { backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%); }
+        .perf-low .glass-card { backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); }
+        .perf-low #noise-overlay { display: none; }
     </style>
 </head>
 <body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
@@ -476,6 +487,7 @@
             }
 
             EuclidApp.initUI();
+            if (EuclidApp.Perf) { EuclidApp.Perf.init(); EuclidApp.Perf.viewportObserver('.lineup-card, .aura-blob', { margin: '200px' }); }
         }
 
         init();

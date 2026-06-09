@@ -85,6 +85,53 @@ const EuclidApp = (() => {
         return md.replace(/\n/g, '<br>');
     }
 
+    // ─── Performance Utilities ───
+    const Perf = (() => {
+        let _low = null;
+        function isLowEnd() {
+            if (_low !== null) return _low;
+            let score = 0;
+            if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) score += 2;
+            if (navigator.deviceMemory && navigator.deviceMemory < 4) score += 2;
+            if (navigator.connection) {
+                const c = navigator.connection;
+                if (c.saveData) score += 2;
+                if (c.effectiveType === '2g' || c.effectiveType === 'slow-2g') score += 2;
+                if (c.downlink < 2) score += 1;
+            }
+            const p = navigator.platform || '';
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+                if (p.indexOf('Linux arm') !== -1 || /Android.*(?:SM-|GT-|Redmi|POCO|Realme|Galaxy A)/i.test(navigator.userAgent)) score += 1;
+            }
+            _low = score >= 3;
+            return _low;
+        }
+        function init() {
+            if (isLowEnd()) document.documentElement.classList.add('perf-low');
+            if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('perf-reduced');
+            const blur = document.querySelectorAll('.aura-blob');
+            if (isLowEnd()) blur.forEach(b => { b.style.filter = 'blur(80px)'; });
+        }
+        function viewportObserver(selector, opts) {
+            const obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    e.target.classList.toggle('in-viewport', e.isIntersecting);
+                });
+            }, { rootMargin: (opts && opts.margin) || '100px', threshold: 0 });
+            document.querySelectorAll(selector || '[data-animate]').forEach(el => obs.observe(el));
+            return obs;
+        }
+        function pauseAura() {
+            const bg = document.getElementById('aura-bg');
+            if (bg) bg.style.animationPlayState = 'paused';
+        }
+        function resumeAura() {
+            const bg = document.getElementById('aura-bg');
+            if (bg) bg.style.animationPlayState = 'running';
+        }
+        return { isLowEnd, init, viewportObserver, pauseAura, resumeAura };
+    })();
+
     // ─── Shared HTML Fragments ───
     function getNavLinkClass(page) {
         return 'nav-link';
@@ -360,6 +407,7 @@ const EuclidApp = (() => {
         timeAgo,
         statusBadge,
         downloadStatusBadge,
+        Perf,
         BASE
     };
 })();
