@@ -592,6 +592,32 @@
             });
 
             EuclidApp.initUI();
+
+            // Load hero device image
+            const heroImg = document.getElementById('device-hero-img');
+            if (heroImg) {
+                const imgSrc = EuclidApp.BASE + '/device_img/' + codename + '.png';
+                const wrap = heroImg.closest('.device-hero-img-wrap');
+                const skeleton = wrap ? wrap.querySelector('.device-hero-img-skeleton') : null;
+                const fallback = wrap ? wrap.querySelector('.device-hero-img-fallback') : null;
+
+                console.log('[EuclidOS] Hero image codename:', codename);
+                console.log('[EuclidOS] Hero image URL:', imgSrc);
+
+                heroImg.onload = function() {
+                    console.log('[EuclidOS] Hero image loaded:', imgSrc);
+                    heroImg.classList.add('loaded');
+                    if (skeleton) skeleton.classList.add('hidden');
+                    if (fallback) fallback.classList.add('hidden');
+                };
+                heroImg.onerror = function() {
+                    console.warn('[EuclidOS] Hero image failed:', imgSrc);
+                    heroImg.style.display = 'none';
+                    if (skeleton) skeleton.classList.add('hidden');
+                    if (fallback) fallback.classList.remove('hidden');
+                };
+                heroImg.src = imgSrc;
+            }
         }
 
         function show404() {
@@ -622,27 +648,6 @@
                 ${EuclidApp.buildFooter()}
             `;
             EuclidApp.initUI();
-
-            // Load hero device image
-            const heroImg = document.getElementById('device-hero-img');
-            if (heroImg) {
-                const imgSrc = EuclidApp.BASE + '/device_img/' + codename + '.png';
-                const wrap = heroImg.closest('.device-hero-img-wrap');
-                const skeleton = wrap ? wrap.querySelector('.device-hero-img-skeleton') : null;
-                const fallback = wrap ? wrap.querySelector('.device-hero-img-fallback') : null;
-
-                heroImg.onload = function() {
-                    heroImg.classList.add('loaded');
-                    if (skeleton) skeleton.classList.add('hidden');
-                    if (fallback) fallback.classList.add('hidden');
-                };
-                heroImg.onerror = function() {
-                    heroImg.style.display = 'none';
-                    if (skeleton) skeleton.classList.add('hidden');
-                    if (fallback) fallback.classList.remove('hidden');
-                };
-                heroImg.src = imgSrc;
-            }
         }
 
         init();
