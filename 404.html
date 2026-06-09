@@ -73,22 +73,93 @@
             -webkit-backdrop-filter: blur(24px) saturate(180%);
             border: 1px solid var(--glass-border);
         }
-        #ambient-bg {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+        /* ─── Aura Background System ─── */
+        #aura-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
             z-index: 0; pointer-events: none; overflow: hidden;
         }
-        .ambient-blob {
+        .aura-blob {
             position: absolute; border-radius: 50%;
-            filter: blur(120px); opacity: 0.3;
-            animation: ambientFloat 25s ease-in-out infinite alternate;
-            will-change: transform;
+            will-change: transform, opacity;
+            filter: blur(140px);
+            mix-blend-mode: screen;
         }
-        @keyframes ambientFloat {
-            0%   { transform: translate(0, 0) scale(1); }
-            25%  { transform: translate(40px, -60px) scale(1.05); }
-            50%  { transform: translate(-30px, 40px) scale(0.95); }
-            75%  { transform: translate(20px, -30px) scale(1.08); }
-            100% { transform: translate(-20px, 20px) scale(1); }
+        .aura-blob-1 {
+            width: 900px; height: 900px;
+            background: radial-gradient(circle, rgba(77,120,255,0.35) 0%, rgba(77,120,255,0.08) 40%, transparent 70%);
+            top: -280px; left: -200px;
+            animation: auraDrift1 35s ease-in-out infinite alternate;
+        }
+        .aura-blob-2 {
+            width: 750px; height: 750px;
+            background: radial-gradient(circle, rgba(108,92,231,0.3) 0%, rgba(108,92,231,0.06) 40%, transparent 70%);
+            top: 15%; right: -250px;
+            animation: auraDrift2 45s ease-in-out infinite alternate;
+        }
+        .aura-blob-3 {
+            width: 650px; height: 650px;
+            background: radial-gradient(circle, rgba(0,123,255,0.28) 0%, rgba(0,123,255,0.05) 40%, transparent 70%);
+            top: 50%; left: -180px;
+            animation: auraDrift3 60s ease-in-out infinite alternate;
+        }
+        .aura-blob-4 {
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(0,240,255,0.2) 0%, rgba(0,240,255,0.04) 40%, transparent 70%);
+            bottom: -220px; right: -200px;
+            animation: auraDrift4 25s ease-in-out infinite alternate;
+        }
+        .aura-blob-5 {
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(138,79,255,0.22) 0%, rgba(138,79,255,0.04) 40%, transparent 70%);
+            top: 35%; left: 40%;
+            animation: auraDrift5 40s ease-in-out infinite alternate;
+        }
+        .aura-blob-6 {
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.03) 40%, transparent 70%);
+            top: 70%; left: 55%;
+            animation: auraDrift6 50s ease-in-out infinite alternate;
+        }
+
+        @keyframes auraDrift1 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            25%  { transform: translate3d(80px, -100px, 0) scale(1.08) rotate(5deg); }
+            50%  { transform: translate3d(-60px, 60px, 0) scale(0.94) rotate(-3deg); }
+            75%  { transform: translate3d(40px, -50px, 0) scale(1.12) rotate(8deg); }
+            100% { transform: translate3d(-40px, 40px, 0) scale(1) rotate(0deg); }
+        }
+        @keyframes auraDrift2 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            30%  { transform: translate3d(-100px, 80px, 0) scale(1.1) rotate(-6deg); }
+            60%  { transform: translate3d(70px, -60px, 0) scale(0.92) rotate(4deg); }
+            100% { transform: translate3d(-30px, 50px, 0) scale(1.05) rotate(-2deg); }
+        }
+        @keyframes auraDrift3 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            20%  { transform: translate3d(60px, 90px, 0) scale(1.06) rotate(3deg); }
+            50%  { transform: translate3d(-80px, -40px, 0) scale(0.95) rotate(-5deg); }
+            80%  { transform: translate3d(50px, -70px, 0) scale(1.1) rotate(7deg); }
+            100% { transform: translate3d(-20px, 30px, 0) scale(1) rotate(0deg); }
+        }
+        @keyframes auraDrift4 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            35%  { transform: translate3d(-90px, -80px, 0) scale(1.12) rotate(-8deg); }
+            70%  { transform: translate3d(70px, 50px, 0) scale(0.9) rotate(6deg); }
+            100% { transform: translate3d(-40px, -30px, 0) scale(1.04) rotate(-2deg); }
+        }
+        @keyframes auraDrift5 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            40%  { transform: translate3d(-70px, 100px, 0) scale(1.08) rotate(4deg); }
+            75%  { transform: translate3d(90px, -50px, 0) scale(0.93) rotate(-6deg); }
+            100% { transform: translate3d(-30px, 60px, 0) scale(1.06) rotate(2deg); }
+        }
+        @keyframes auraDrift6 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            25%  { transform: translate3d(50px, -90px, 0) scale(1.1) rotate(-5deg); }
+            55%  { transform: translate3d(-60px, 70px, 0) scale(0.91) rotate(7deg); }
+            85%  { transform: translate3d(80px, 30px, 0) scale(1.05) rotate(-3deg); }
+            100% { transform: translate3d(-20px, -40px, 0) scale(1) rotate(0deg); }
         }
         .reveal-section { opacity: 0; transform: translateY(30px); }
         #navbar { transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out); will-change: transform; }
@@ -218,10 +289,13 @@
 </head>
 <body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
 
-    <div id="ambient-bg">
-        <div class="ambient-blob" style="width: 600px; height: 600px; background: radial-gradient(circle, rgba(77,120,255,0.4) 0%, transparent 70%); top: -200px; left: -100px;"></div>
-        <div class="ambient-blob" style="width: 500px; height: 500px; background: radial-gradient(circle, rgba(108,92,231,0.3) 0%, transparent 70%); top: 30%; right: -200px; animation-delay: -8s;"></div>
-        <div class="ambient-blob" style="width: 400px; height: 400px; background: radial-gradient(circle, rgba(0,123,255,0.25) 0%, transparent 70%); top: 60%; left: -100px; animation-delay: -14s;"></div>
+    <div id="aura-bg">
+        <div class="aura-blob aura-blob-1"></div>
+        <div class="aura-blob aura-blob-2"></div>
+        <div class="aura-blob aura-blob-3"></div>
+        <div class="aura-blob aura-blob-4"></div>
+        <div class="aura-blob aura-blob-5"></div>
+        <div class="aura-blob aura-blob-6"></div>
     </div>
     <div id="noise-overlay"></div>
     <div id="scroll-progress"></div>
