@@ -327,6 +327,67 @@
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* ─── Device Hero Image ─── */
+        .device-hero-img-wrap {
+            position: relative;
+            width: 160px; height: 160px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        @media (min-width: 768px) {
+            .device-hero-img-wrap { width: 200px; height: 200px; }
+        }
+        .device-hero-glow {
+            position: absolute; inset: -20px;
+            background: radial-gradient(circle, rgba(77,120,255,0.2) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(20px);
+            animation: heroGlowPulse 4s ease-in-out infinite;
+        }
+        @keyframes heroGlowPulse {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+        .device-hero-img {
+            max-width: 75%; max-height: 75%;
+            object-fit: contain;
+            opacity: 0;
+            transition: opacity 0.8s var(--ease-out), transform 0.8s var(--ease-out);
+            filter: drop-shadow(0 16px 48px rgba(0,0,0,0.5));
+            animation: heroFloat 6s ease-in-out infinite;
+            position: relative; z-index: 2;
+        }
+        .device-hero-img.loaded {
+            opacity: 1;
+        }
+        @keyframes heroFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .device-hero-img-fallback {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px; height: 100px;
+            background: linear-gradient(135deg, rgba(77,120,255,0.12), rgba(0,240,255,0.06));
+            border-radius: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem;
+            position: relative; z-index: 1;
+        }
+        .device-hero-img-fallback.hidden { display: none; }
+        .device-hero-img-skeleton {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100px; height: 120px;
+            border-radius: 1.25rem;
+            overflow: hidden;
+            background: linear-gradient(90deg, rgba(255,255,255,0.02) 25%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.02) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.8s ease-in-out infinite;
+            z-index: 1;
+        }
+        .device-hero-img-skeleton.hidden { display: none; }
     </style>
 </head>
 <body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
@@ -389,11 +450,14 @@
                             All Devices
                         </a>
                         <div class="flex flex-col items-center">
-                            <div class="relative mb-6 reveal-section">
-                                <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-euclid/15 to-white/[0.03] rounded-2xl flex items-center justify-center border border-white/[0.06] relative">
-                                    <span class="text-4xl md:text-5xl">&#128241;</span>
-                                    ${device.active ? '<div class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-green-400 rounded-full border-[3px] border-[#03030a] shadow-lg shadow-green-400/30"></div>' : '<div class="absolute -top-1.5 -right-1.5 w-4 h-4 bg-red-400/70 rounded-full border-[3px] border-[#03030a]"></div>'}
+                            <div class="device-hero-img-wrap relative mb-8 reveal-section">
+                                <div class="device-hero-glow"></div>
+                                <div class="device-hero-img-skeleton shimmer"></div>
+                                <img id="device-hero-img" alt="${device.device_name}" class="device-hero-img">
+                                <div class="device-hero-img-fallback">
+                                    <span>&#128241;</span>
                                 </div>
+                                ${device.active ? '<div class="absolute -bottom-2 -right-2 w-5 h-5 bg-green-400 rounded-full border-[3px] border-[#0a0a14] shadow-lg shadow-green-400/30 z-10"></div>' : '<div class="absolute -bottom-2 -right-2 w-5 h-5 bg-red-400/70 rounded-full border-[3px] border-[#0a0a14] z-10"></div>'}
                             </div>
                             <h1 class="text-3xl md:text-5xl lg:text-6xl font-display font-bold mb-3 reveal-section leading-[1.1]">
                                 ${device.device_name}
@@ -558,6 +622,27 @@
                 ${EuclidApp.buildFooter()}
             `;
             EuclidApp.initUI();
+
+            // Load hero device image
+            const heroImg = document.getElementById('device-hero-img');
+            if (heroImg) {
+                const imgSrc = EuclidApp.BASE + '/device_img/' + codename + '.png';
+                const wrap = heroImg.closest('.device-hero-img-wrap');
+                const skeleton = wrap ? wrap.querySelector('.device-hero-img-skeleton') : null;
+                const fallback = wrap ? wrap.querySelector('.device-hero-img-fallback') : null;
+
+                heroImg.onload = function() {
+                    heroImg.classList.add('loaded');
+                    if (skeleton) skeleton.classList.add('hidden');
+                    if (fallback) fallback.classList.add('hidden');
+                };
+                heroImg.onerror = function() {
+                    heroImg.style.display = 'none';
+                    if (skeleton) skeleton.classList.add('hidden');
+                    if (fallback) fallback.classList.remove('hidden');
+                };
+                heroImg.src = imgSrc;
+            }
         }
 
         init();
