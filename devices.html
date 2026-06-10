@@ -41,8 +41,7 @@
             --glow: #9ea8ff;
             --accent-cyan: #00f0ff;
             --text-muted: #8888a0;
-            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-            --font-display: 'Space Grotesk', sans-serif;
+            --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
         }
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -363,7 +362,7 @@
             border: 1px solid rgba(255,255,255,0.05);
             border-radius: 1.5rem;
             overflow: hidden;
-            transition: border-color 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out);
+            transition: border-color 0.4s var(--ease-out), box-shadow 0.4s var(--ease-out), transform 0.4s var(--ease-out);
             opacity: 0; transform: translateY(30px);
             text-decoration: none; color: inherit; display: block;
             will-change: transform;
@@ -375,7 +374,7 @@
         .device-card .card-glow {
             position: absolute; inset: -1px; border-radius: inherit;
             background: conic-gradient(from 0deg, transparent, 30%, var(--clr-primary), 50%, transparent);
-            opacity: 0; transition: opacity 0.6s var(--ease-out);
+            opacity: 0; transition: opacity 0.4s var(--ease-out);
             z-index: 0;
         }
         .device-card:hover .card-glow { opacity: 0.35; }
@@ -408,14 +407,14 @@
             max-width: 70%; max-height: 85%;
             object-fit: contain;
             opacity: 0;
-            transition: opacity 0.7s var(--ease-out), transform 0.7s var(--ease-out);
+            transition: opacity 0.4s var(--ease-out), transform 0.4s var(--ease-out), filter 0.4s var(--ease-out);
             filter: drop-shadow(0 12px 32px rgba(0,0,0,0.4));
         }
         .device-img.loaded {
             opacity: 1;
         }
         .device-card:hover .device-img.loaded {
-            transform: scale(1.06);
+            transform: scale(1.04);
             filter: drop-shadow(0 16px 40px rgba(0,0,0,0.5)) drop-shadow(0 0 24px rgba(77,120,255,0.2));
         }
         .device-img-fallback {
@@ -522,7 +521,7 @@
             transform: translateY(-1px);
         }
         .device-action svg {
-            transition: transform 0.3s var(--ease-out);
+            transition: transform 0.4s var(--ease-out);
         }
         .device-card:hover .device-action svg {
             transform: translateX(4px);
