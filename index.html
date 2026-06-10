@@ -1390,8 +1390,12 @@
                 const href = item.getAttribute('href');
                 closeMenu();
                 setTimeout(() => {
-                    const target = document.querySelector(href);
-                    if (target) lenis.scrollTo(target, { offset: -70, duration: 1.5 });
+                    if (href.startsWith('#')) {
+                        const target = document.querySelector(href);
+                        if (target) lenis.scrollTo(target, { offset: -70, duration: 1.5 });
+                    } else {
+                        window.location.href = href;
+                    }
                 }, 350);
             });
         });
