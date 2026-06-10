@@ -98,8 +98,8 @@
         }
         .glass-card {
             background: rgba(16, 16, 30, 0.5);
-            backdrop-filter: blur(16px) saturate(140%);
-            -webkit-backdrop-filter: blur(16px) saturate(140%);
+            backdrop-filter: blur(12px) saturate(140%);
+            -webkit-backdrop-filter: blur(12px) saturate(140%);
             border: 1px solid var(--glass-border);
             box-shadow: 0 6px 24px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.04);
             transition: all 0.5s var(--ease-out);
@@ -115,7 +115,7 @@
             width: 6px; height: 6px;
             border-radius: 50%; background: var(--glow);
             position: fixed; pointer-events: none; z-index: 99999;
-            transform: translate(-50%, -50%);
+            will-change: transform;
             mix-blend-mode: screen;
             transition: width 0.2s, height 0.2s, opacity 0.2s;
         }
@@ -123,7 +123,7 @@
             width: 36px; height: 36px;
             border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 99998;
-            transform: translate(-50%, -50%);
+            will-change: transform;
             transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-color 0.3s;
         }
         .cursor-ring.hovering {
@@ -140,7 +140,7 @@
         .aura-blob {
             position: absolute; border-radius: 50%;
             will-change: transform, opacity;
-            filter: blur(120px);
+            filter: blur(80px);
             mix-blend-mode: screen;
         }
         .aura-blob-1 {
@@ -489,13 +489,12 @@
         .carousel-slide { opacity: 0.5; }
         .carousel-slide.active { opacity: 1; }
         .carousel-slide.dim { opacity: 0.65; filter: blur(0.4px); }
-        .carousel-slide.far { opacity: 0.35; filter: blur(1.5px); }
+        .carousel-slide.far { opacity: 0.35; }
 
         .carousel-btn {
             width: 44px; height: 44px;
             border-radius: 50%;
             background: rgba(16, 16, 30, 0.7);
-            backdrop-filter: blur(12px);
             border: 1px solid rgba(255,255,255,0.1);
             color: white; font-size: 18px;
             display: flex; align-items: center; justify-content: center;
@@ -754,6 +753,44 @@
         [data-animate].in-viewport { animation-play-state: running !important; }
         .contributor-card.out-viewport { animation-play-state: paused !important; }
         .contrib-particle.out-viewport { animation-play-state: paused !important; }
+        .aura-blob.out-viewport { animation-play-state: paused !important; }
+        .marquee-track.out-viewport { animation-play-state: paused !important; }
+        .lineup-card.out-viewport .lineup-device-img.loaded { animation-play-state: paused !important; }
+
+        /* ─── Performance: GPU Layer Promotion ─── */
+        .aura-blob, .carousel-track {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        /* ─── Performance: Contain Paint ─── */
+        .glass, .glass-card, .aura-blob, .tilt-card, .device-card,
+        .lineup-card, .contributor-card, .carousel-slide, .gallery-item {
+            contain: layout paint style;
+        }
+
+        /* ─── Performance: Content Visibility for offscreen sections ─── */
+        #about, #features, #screenshots, #downloads, #contributors, #contact,
+        .marquee-section, footer {
+            content-visibility: auto;
+            contain-intrinsic-size: 600px;
+        }
+        footer { contain-intrinsic-size: 400px; }
+
+        /* ─── Performance: Enhanced Low-End ─── */
+        .perf-low .glass, .perf-low .glass-card { transform: none !important; }
+        .perf-low .tilt-card { transform-style: flat !important; }
+        .perf-low .tilt-card:hover { transform: none !important; }
+        .perf-low .hover\\:scale-\\[1\\.02\\]:hover { transform: none !important; }
+        .perf-low .aura-blob { animation-duration: 60s !important; }
+        .perf-low .marquee-track { animation-duration: 60s !important; }
+        .perf-low .shimmer { animation: none !important; }
+        .perf-low .animate-pulse { animation: none !important; opacity: 0.5; }
+        .perf-low .contributor-card { animation: none !important; }
+        .perf-low .contrib-particle { animation: none !important; display: none; }
+        .perf-low .device-hero-img { animation: none !important; }
+        .perf-low .status-dot.active { animation: none !important; }
+        .perf-low .glow-border, .perf-low .card-glow, .perf-low .card-glow-reactive { display: none !important; }
     </style>
 </head>
 <body class="dark-theme" style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
@@ -1211,20 +1248,20 @@
     (function() {
         'use strict';
 
-        // ─── Lenis Smooth Scroll ───
-        const lenis = new Lenis({
-            duration: 1.3,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-            wheelMultiplier: 0.9,
-            touchMultiplier: 1.5,
-        });
-        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-        requestAnimationFrame(raf);
+        // ─── Lenis Smooth Scroll (Singleton) ───
+        var lenis = (typeof EuclidApp !== 'undefined' && EuclidApp.getLenis) ? EuclidApp.getLenis() : null;
+        if (!lenis) {
+            lenis = new Lenis({
+                duration: 1.3,
+                easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+                smoothWheel: true, wheelMultiplier: 0.9, touchMultiplier: 1.5,
+            });
+            (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(0);
+        }
 
-        lenis.on('scroll', (e) => {
-            ScrollTrigger.update();
-            const bar = document.getElementById('scroll-progress');
+        lenis.on('scroll', function(e) {
+            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.update();
+            var bar = document.getElementById('scroll-progress');
             if (bar) bar.style.width = (e.progress * 100).toFixed(2) + '%';
         });
 
@@ -1232,9 +1269,8 @@
         gsap.registerPlugin(ScrollTrigger);
 
         // ─── Performance: Device Detection & Viewport Observer ───
-        if (typeof Perf !== 'undefined') {
-            Perf.init();
-            Perf.viewportObserver('[data-animate], .contributor-card, .contrib-particle, .aura-blob', { margin: '200px' });
+        if (typeof EuclidApp !== 'undefined' && EuclidApp.Perf) {
+            EuclidApp.Perf.init();
         } else {
             // Fallback: detect low-end inline
             (function() {
@@ -1244,17 +1280,10 @@
                 if (navigator.connection && navigator.connection.saveData) score += 2;
                 if (score >= 3) {
                     document.documentElement.classList.add('perf-low');
-                    document.querySelectorAll('.aura-blob').forEach(function(b) { b.style.filter = 'blur(80px)'; });
+                    document.querySelectorAll('.aura-blob').forEach(function(b) { b.style.filter = 'blur(65px)'; });
                     var n = document.getElementById('noise-overlay'); if (n) n.style.display = 'none';
                 }
                 if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('perf-reduced');
-            })();
-            // Viewport observer fallback
-            (function() {
-                var obs = new IntersectionObserver(function(entries) {
-                    entries.forEach(function(e) { e.target.classList.toggle('in-viewport', e.isIntersecting); });
-                }, { rootMargin: '200px', threshold: 0 });
-                document.querySelectorAll('.contributor-card, .contrib-particle, .aura-blob').forEach(function(el) { obs.observe(el); });
             })();
         }
 
@@ -1589,7 +1618,7 @@
             }
         })();
 
-        // ─── Custom Cursor (Optimized: throttled RAF) ───
+        // ─── Custom Cursor (GPU-optimized: transform instead of left/top) ───
         const cursorDot = document.getElementById('cursor-dot');
         const cursorRing = document.getElementById('cursor-ring');
         let mouseX = 0, mouseY = 0, ringX = 0, ringY = 0;
@@ -1598,7 +1627,9 @@
         if (window.innerWidth > 768) {
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX; mouseY = e.clientY;
-                if (cursorDot) { cursorDot.style.left = mouseX + 'px'; cursorDot.style.top = mouseY + 'px'; }
+                if (cursorDot) {
+                    cursorDot.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
+                }
                 if (!cursorActive) {
                     cursorActive = true;
                     requestAnimationFrame(animateCursor);
@@ -1608,8 +1639,10 @@
             function animateCursor() {
                 ringX += (mouseX - ringX) * 0.12;
                 ringY += (mouseY - ringY) * 0.12;
-                if (cursorRing) { cursorRing.style.left = ringX + 'px'; cursorRing.style.top = ringY + 'px'; }
-                if (Math.abs(mouseX - ringX) > 0.5 || Math.abs(mouseY - ringY) > 0.5) {
+                if (cursorRing) {
+                    cursorRing.style.transform = 'translate3d(' + ringX + 'px,' + ringY + 'px,0) translate(-50%,-50%)';
+                }
+                if (Math.abs(mouseX - ringX) > 2 || Math.abs(mouseY - ringY) > 2) {
                     requestAnimationFrame(animateCursor);
                 } else {
                     cursorActive = false;
@@ -1703,6 +1736,7 @@
             allSlides.forEach(s => s.style.width = slideWidth + 'px');
         }
 
+        let lastStateUpdate = 0;
         function goTo(index, animate = true) {
             currentSlide = index;
             const offset = -(index + cloneCount) * slideWidth + (carouselTrack.parentElement.offsetWidth / 2) - (slideWidth / 2);
@@ -1711,8 +1745,17 @@
                 x: offset,
                 duration: animate ? 0.7 : 0,
                 ease: "power3.inOut",
-                onUpdate: updateSlideStates,
-                onComplete: handleLoop,
+                onUpdate: function () {
+                    const now = performance.now();
+                    if (now - lastStateUpdate > 100) {
+                        lastStateUpdate = now;
+                        updateSlideStates();
+                    }
+                },
+                onComplete: function () {
+                    updateSlideStates();
+                    handleLoop();
+                },
             });
 
             // Update dots
@@ -1780,11 +1823,16 @@
             carouselTrack.setPointerCapture(e.pointerId);
             stopAutoPlay();
         });
+        let lastDragUpdate = 0;
         carouselTrack.addEventListener('pointermove', (e) => {
             if (!isDragging) return;
             dragOffset = e.clientX - dragStartX;
             gsap.set(carouselTrack, { x: -(currentSlide + cloneCount) * slideWidth + (carouselTrack.parentElement.offsetWidth / 2) - (slideWidth / 2) + dragOffset });
-            updateSlideStates();
+            const now = performance.now();
+            if (now - lastDragUpdate > 80) {
+                lastDragUpdate = now;
+                updateSlideStates();
+            }
         });
         carouselTrack.addEventListener('pointerup', (e) => {
             if (!isDragging) return;

@@ -86,7 +86,7 @@
         .aura-blob {
             position: absolute; border-radius: 50%;
             will-change: transform, opacity;
-            filter: blur(120px);
+            filter: blur(80px);
             mix-blend-mode: screen;
         }
         .aura-blob-1 {
@@ -443,7 +443,6 @@
             position: absolute; top: 16px; right: 16px; z-index: 5;
             display: flex; align-items: center; gap: 6px;
             padding: 6px 12px; border-radius: 9999px;
-            backdrop-filter: blur(10px);
             font-size: 10px; font-weight: 700;
             text-transform: uppercase; letter-spacing: 0.1em;
         }
@@ -582,6 +581,33 @@
         .perf-low #noise-overlay { display: none; }
         [data-animate].out-viewport { animation-play-state: paused !important; }
         [data-animate].in-viewport { animation-play-state: running !important; }
+        .aura-blob.out-viewport { animation-play-state: paused !important; }
+
+        /* ─── Performance: GPU Layer Promotion ─── */
+        .aura-blob {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        /* ─── Performance: Contain Paint ─── */
+        .glass, .glass-card, .aura-blob, .device-card {
+            contain: layout paint style;
+        }
+
+        /* ─── Performance: Content Visibility for offscreen sections ─── */
+        header, main, footer {
+            content-visibility: auto;
+            contain-intrinsic-size: 800px;
+        }
+
+        /* ─── Performance: Enhanced Low-End ─── */
+        .perf-low .aura-blob { animation-duration: 60s !important; }
+        .perf-low .shimmer { animation: none !important; }
+        .perf-low .animate-pulse { animation: none !important; opacity: 0.5; }
+        .perf-low .status-dot.active { animation: none !important; }
+        .perf-low .card-glow, .perf-low .card-reactive { display: none !important; }
+        .perf-low .device-card { transform: none !important; }
+        .perf-low .device-card:hover { transform: none !important; }
     </style>
 </head>
 <body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
@@ -890,7 +916,7 @@
 
             renderDevices();
             EuclidApp.initUI();
-            if (EuclidApp.Perf) { EuclidApp.Perf.init(); EuclidApp.Perf.viewportObserver('.device-card, .aura-blob', { margin: '200px' }); }
+            if (EuclidApp.Perf) { EuclidApp.Perf.init(); }
         }
 
         init();

@@ -9,6 +9,23 @@ const EuclidApp = (() => {
     const BASE = 'https://raw.githubusercontent.com/euclid-Devices/official_devices/refs/heads/16';
     const _cache = {};
 
+    // ─── Global Lenis Singleton ───
+    let _lenisInstance = null;
+    function getLenis() {
+        if (_lenisInstance) return _lenisInstance;
+        if (typeof Lenis === 'undefined') return null;
+        _lenisInstance = new Lenis({
+            duration: 1.3,
+            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+            smoothWheel: true,
+            wheelMultiplier: 0.9,
+            touchMultiplier: 1.5,
+        });
+        function raf(time) { _lenisInstance.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        return _lenisInstance;
+    }
+
     // ─── Data Fetching with Cache ───
     async function fetchJSON(path) {
         if (_cache[path]) return _cache[path];
@@ -88,6 +105,7 @@ const EuclidApp = (() => {
     // ─── Performance Utilities ───
     const Perf = (() => {
         let _low = null;
+        let _obs = null;
         function isLowEnd() {
             if (_low !== null) return _low;
             let score = 0;
@@ -99,9 +117,9 @@ const EuclidApp = (() => {
                 if (c.effectiveType === '2g' || c.effectiveType === 'slow-2g') score += 2;
                 if (c.downlink < 2) score += 1;
             }
-            const p = navigator.platform || '';
-            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-                if (p.indexOf('Linux arm') !== -1 || /Android.*(?:SM-|GT-|Redmi|POCO|Realme|Galaxy A)/i.test(navigator.userAgent)) score += 1;
+            const ua = navigator.userAgent;
+            if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua)) {
+                if (/Android.*(?:SM-|GT-|Redmi|POCO|Realme|Galaxy A)/i.test(ua)) score += 1;
             }
             _low = score >= 3;
             return _low;
@@ -109,8 +127,58 @@ const EuclidApp = (() => {
         function init() {
             if (isLowEnd()) document.documentElement.classList.add('perf-low');
             if (matchMedia('(prefers-reduced-motion: reduce)').matches) document.documentElement.classList.add('perf-reduced');
-            const blur = document.querySelectorAll('.aura-blob');
-            if (isLowEnd()) blur.forEach(b => { b.style.filter = 'blur(80px)'; });
+            if (isLowEnd()) {
+                document.querySelectorAll('.aura-blob').forEach(b => {
+                    b.style.filter = 'blur(65px)';
+                });
+                const noise = document.getElementById('noise-overlay');
+                if (noise) noise.style.display = 'none';
+            }
+            _setupTabVisibility();
+            _setupViewportObserver();
+        }
+        function _setupTabVisibility() {
+            document.addEventListener('visibilitychange', () => {
+                const hidden = document.hidden;
+                const bg = document.getElementById('aura-bg');
+                if (bg) {
+                    if (hidden) { bg.style.animationPlayState = 'paused'; } else { bg.style.animationPlayState = 'running'; }
+                }
+                const marquee = document.querySelector('.marquee-track');
+                if (marquee) {
+                    if (hidden) { marquee.style.animationPlayState = 'paused'; } else { marquee.style.animationPlayState = 'running'; }
+                }
+                const particles = document.querySelectorAll('.contrib-particle');
+                particles.forEach(p => {
+                    if (hidden) { p.style.animationPlayState = 'paused'; } else { p.style.animationPlayState = 'running'; }
+                });
+                const floatCards = document.querySelectorAll('.contributor-card');
+                floatCards.forEach(c => {
+                    if (hidden) { c.style.animationPlayState = 'paused'; } else { c.style.animationPlayState = 'running'; }
+                });
+                const heroImgs = document.querySelectorAll('.device-hero-img');
+                heroImgs.forEach(img => {
+                    if (hidden) { img.style.animationPlayState = 'paused'; } else { img.style.animationPlayState = 'running'; }
+                });
+                const pulseDots = document.querySelectorAll('.status-dot.active');
+                pulseDots.forEach(d => {
+                    if (hidden) { d.style.animationPlayState = 'paused'; } else { d.style.animationPlayState = 'running'; }
+                });
+            });
+        }
+        function _setupViewportObserver() {
+            if (_obs) return;
+            _obs = new IntersectionObserver(entries => {
+                entries.forEach(e => {
+                    const inView = e.isIntersecting;
+                    e.target.classList.toggle('in-viewport', inView);
+                    e.target.classList.toggle('out-viewport', !inView);
+                });
+            }, { rootMargin: '200px', threshold: 0 });
+            const targets = document.querySelectorAll('[data-animate], .contributor-card, .contrib-particle, .aura-blob, .marquee-track, .lineup-card');
+            targets.forEach(el => {
+                if (el) _obs.observe(el);
+            });
         }
         function viewportObserver(selector, opts) {
             const obs = new IntersectionObserver(entries => {
@@ -235,27 +303,18 @@ const EuclidApp = (() => {
 
     // ─── Shared UI Initialization ───
     function initUI() {
-        if (typeof gsap === 'undefined' || typeof Lenis === 'undefined') return;
+        if (typeof gsap === 'undefined') return;
 
-        const lenis = new Lenis({
-            duration: 1.3,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-            wheelMultiplier: 0.9,
-            touchMultiplier: 1.5,
-        });
-        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-        requestAnimationFrame(raf);
+        const lenis = getLenis();
+        if (!lenis) return;
 
-        lenis.on('scroll', (e) => {
-            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.update();
-            const bar = document.getElementById('scroll-progress');
-            if (bar) bar.style.width = (e.progress * 100).toFixed(2) + '%';
-        });
-
-        if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        if (typeof ScrollTrigger !== 'undefined' && gsap) {
             gsap.registerPlugin(ScrollTrigger);
         }
+
+        // Scroll progress - use single listener via Lenis
+        lenis.off('scroll', _lenisScrollHandler);
+        lenis.on('scroll', _lenisScrollHandler);
 
         // Navbar
         const navbar = document.getElementById('navbar');
@@ -331,14 +390,17 @@ const EuclidApp = (() => {
             });
         });
 
-        // Scroll Reveal
-        document.querySelectorAll('.reveal-section').forEach((el) => {
-            gsap.to(el, {
-                y: 0, opacity: 1, duration: 0.7,
-                ease: "power3.out",
-                scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" }
+        // Scroll Reveal - batch with reduced ScrollTrigger count
+        const revealEls = document.querySelectorAll('.reveal-section');
+        if (revealEls.length > 0) {
+            revealEls.forEach((el) => {
+                gsap.to(el, {
+                    y: 0, opacity: 1, duration: 0.7,
+                    ease: "power3.out",
+                    scrollTrigger: { trigger: el, start: "top 88%", toggleActions: "play none none none" }
+                });
             });
-        });
+        }
 
         // Smooth scroll anchors
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
@@ -352,6 +414,13 @@ const EuclidApp = (() => {
         });
 
         return lenis;
+    }
+
+    // ─── Shared Lenis scroll handler ───
+    function _lenisScrollHandler(e) {
+        if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.update();
+        const bar = document.getElementById('scroll-progress');
+        if (bar) bar.style.width = (e.progress * 100).toFixed(2) + '%';
     }
 
     // ─── Date Formatting ───
@@ -403,6 +472,7 @@ const EuclidApp = (() => {
         buildMobileMenu,
         buildFooter,
         initUI,
+        getLenis,
         formatDate,
         timeAgo,
         statusBadge,

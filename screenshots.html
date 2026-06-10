@@ -80,8 +80,8 @@
         }
         .glass-card {
             background: rgba(16, 16, 30, 0.5);
-            backdrop-filter: blur(20px) saturate(150%);
-            -webkit-backdrop-filter: blur(20px) saturate(150%);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
             border: 1px solid var(--glass-border);
             box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
             transition: all 0.5s var(--ease-out);
@@ -101,7 +101,7 @@
         .aura-blob {
             position: absolute; border-radius: 50%;
             will-change: transform, opacity;
-            filter: blur(120px);
+            filter: blur(80px);
             mix-blend-mode: screen;
         }
         .aura-blob-1 {
@@ -329,7 +329,6 @@
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
             width: 48px; height: 48px; border-radius: 50%;
             background: rgba(77, 120, 255, 0.8);
-            backdrop-filter: blur(8px);
             display: flex; align-items: center; justify-content: center;
             opacity: 0; transition: all 0.4s var(--ease-out);
         }
@@ -387,10 +386,33 @@
             animation-iteration-count: 1 !important;
             transition-duration: 0.01ms !important;
         }
-        .perf-low .aura-blob { filter: blur(80px) !important; opacity: 0.7; }
+        .perf-low .aura-blob { filter: blur(65px) !important; opacity: 0.7; }
         .perf-low .glass { backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%); }
         .perf-low .glass-card { backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); }
         .perf-low #noise-overlay { display: none; }
+        .aura-blob.out-viewport { animation-play-state: paused !important; }
+
+        /* ─── Performance: GPU Layer Promotion ─── */
+        .aura-blob {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+
+        /* ─── Performance: Contain Paint ─── */
+        .glass, .glass-card, .aura-blob, .gallery-item {
+            contain: layout paint style;
+        }
+
+        /* ─── Performance: Content Visibility for offscreen sections ─── */
+        header, .gallery-section, footer {
+            content-visibility: auto;
+            contain-intrinsic-size: 800px;
+        }
+        #gallery-grid { content-visibility: auto; contain-intrinsic-size: 1200px; }
+
+        /* ─── Performance: Enhanced Low-End ─── */
+        .perf-low .aura-blob { animation-duration: 60s !important; }
+        .perf-low .gallery-item:hover img { transform: none !important; }
     </style>
 </head>
 <body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
@@ -607,19 +629,19 @@
     (function() {
         'use strict';
 
-        const lenis = new Lenis({
-            duration: 1.3,
-            easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-            smoothWheel: true,
-            wheelMultiplier: 0.9,
-            touchMultiplier: 1.5,
-        });
-        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
-        requestAnimationFrame(raf);
+        var lenis = (typeof EuclidApp !== 'undefined' && EuclidApp.getLenis) ? EuclidApp.getLenis() : null;
+        if (!lenis) {
+            lenis = new Lenis({
+                duration: 1.3,
+                easing: function(t) { return Math.min(1, 1.001 - Math.pow(2, -10 * t)); },
+                smoothWheel: true, wheelMultiplier: 0.9, touchMultiplier: 1.5,
+            });
+            (function raf(time) { lenis.raf(time); requestAnimationFrame(raf); })(0);
+        }
 
-        lenis.on('scroll', (e) => {
-            ScrollTrigger.update();
-            const bar = document.getElementById('scroll-progress');
+        lenis.on('scroll', function(e) {
+            if (typeof ScrollTrigger !== 'undefined') ScrollTrigger.update();
+            var bar = document.getElementById('scroll-progress');
             if (bar) bar.style.width = (e.progress * 100).toFixed(2) + '%';
         });
 
@@ -628,7 +650,6 @@
         // ─── Performance: Device Detection ───
         if (typeof EuclidApp !== 'undefined' && EuclidApp.Perf) {
             EuclidApp.Perf.init();
-            EuclidApp.Perf.viewportObserver('.gallery-item, .aura-blob', { margin: '200px' });
         } else {
             (function() {
                 var score = 0;
