@@ -78,7 +78,7 @@ const EuclidApp = (() => {
     }
 
     // ─── Source Changelog ───
-    const CHANGELOGS_URL = BASE + '/euclidOS-changelogs.md';
+    const CHANGELOGS_URL = BASE + '/changelogs/euclid.md';
 
     async function fetchSourceChangelog() {
         return await fetchRawMarkdown(CHANGELOGS_URL);
