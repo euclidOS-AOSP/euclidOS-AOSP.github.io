@@ -77,6 +77,26 @@ const EuclidApp = (() => {
         return await fetchMarkdown(`instructions/${codename}.md`);
     }
 
+    // ─── Source Changelog ───
+    const CHANGELOGS_URL = BASE + '/euclidOS-changelogs.md';
+
+    async function fetchSourceChangelog() {
+        return await fetchRawMarkdown(CHANGELOGS_URL);
+    }
+
+    async function fetchRawMarkdown(url) {
+        if (_cache[url]) return _cache[url];
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`${res.status}`);
+            const text = await res.text();
+            _cache[url] = text;
+            return text;
+        } catch (e) {
+            return null;
+        }
+    }
+
     // ─── Markdown Rendering ───
     function renderMarkdown(md) {
         if (!md) return '';
@@ -215,6 +235,8 @@ const EuclidApp = (() => {
                 <a href="index.html" class="nav-link ${getActiveClass(currentPage, 'home')}">Home</a>
                 <a href="devices.html" class="nav-link ${getActiveClass(currentPage, 'devices')}">Devices</a>
                 <a href="screenshots.html" class="nav-link ${getActiveClass(currentPage, 'screenshots')}">Screenshots</a>
+                <a href="team.html" class="nav-link ${getActiveClass(currentPage, 'team')}">Team</a>
+                <a href="changelogs.html" class="nav-link ${getActiveClass(currentPage, 'changelogs')}">What's New</a>
             </div>
             <div class="hidden md:flex items-center gap-3">
                 <a href="devices.html" class="px-5 py-2.5 bg-euclid text-white text-sm font-semibold rounded-full hover:bg-euclid/90 transition-all duration-300 shadow-lg shadow-euclid/20 hover:shadow-euclid/40 hover:-translate-y-0.5">Get EuclidOS</a>
@@ -240,6 +262,8 @@ const EuclidApp = (() => {
                 <a href="index.html" class="menu-nav-item" data-index="0"><span class="item-index">01</span>Home<span class="item-arrow">&rarr;</span></a>
                 <a href="devices.html" class="menu-nav-item" data-index="1"><span class="item-index">02</span>Devices<span class="item-arrow">&rarr;</span></a>
                 <a href="screenshots.html" class="menu-nav-item" data-index="2"><span class="item-index">03</span>Screenshots<span class="item-arrow">&rarr;</span></a>
+                <a href="team.html" class="menu-nav-item" data-index="3"><span class="item-index">04</span>Team<span class="item-arrow">&rarr;</span></a>
+                <a href="changelogs.html" class="menu-nav-item" data-index="4"><span class="item-index">05</span>What's New<span class="item-arrow">&rarr;</span></a>
             </nav>
             <a href="devices.html" class="menu-cta-btn">Get EuclidOS</a>
         </div>
@@ -268,6 +292,8 @@ const EuclidApp = (() => {
                         <li><a href="index.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Home</a></li>
                         <li><a href="devices.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Devices</a></li>
                         <li><a href="screenshots.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Screenshots</a></li>
+                        <li><a href="team.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Team</a></li>
+                        <li><a href="changelogs.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">What's New</a></li>
                     </ul>
                 </div>
                 <div>
@@ -454,6 +480,7 @@ const EuclidApp = (() => {
         getChangelog,
         getInstructions,
         renderMarkdown,
+        fetchSourceChangelog,
         buildNavbar,
         buildMobileMenu,
         buildFooter,

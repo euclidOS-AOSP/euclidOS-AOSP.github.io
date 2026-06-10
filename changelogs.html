@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's New | EuclidOS</title>
+    <meta name="description" content="Latest EuclidOS source changelogs. See what's new in the latest builds.">
+    <link rel="icon" type="image/jpeg" href="assets/screenshots/logo.jpeg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        euclid: '#4d78ff',
+                        'euclid-dark': '#03030a',
+                        'euclid-muted': '#8888a0',
+                        'euclid-dim': 'rgba(77, 120, 255, 0.1)',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        :root {
+            --clr-primary: #4d78ff;
+            --clr-primary-dim: rgba(77, 120, 255, 0.1);
+            --bg-main: #03030a;
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-border-hover: rgba(255, 255, 255, 0.12);
+            --glow: #9ea8ff;
+            --accent-cyan: #00f0ff;
+            --text-muted: #8888a0;
+            --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+        }
+        * { box-sizing: border-box; }
+        body {
+            margin: 0; padding: 0;
+            background-color: var(--bg-main);
+            color: #f0f0f5;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.12); border-radius: 10px; }
+        #noise-overlay {
+            position: fixed; inset: 0;
+            pointer-events: none; z-index: 9999;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+        }
+        #scroll-progress {
+            position: fixed; top: 0; left: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            z-index: 10001; width: 0%;
+            box-shadow: 0 0 12px var(--clr-primary);
+        }
+        .glass {
+            background: rgba(10, 10, 20, 0.6);
+            backdrop-filter: blur(18px) saturate(160%);
+            -webkit-backdrop-filter: blur(18px) saturate(160%);
+            border: 1px solid var(--glass-border);
+        }
+        .glass-card {
+            background: rgba(16, 16, 30, 0.5);
+            backdrop-filter: blur(12px) saturate(150%);
+            -webkit-backdrop-filter: blur(12px) saturate(150%);
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.04);
+            transition: all 0.5s var(--ease-out);
+        }
+        .glass-card:hover {
+            border-color: var(--glass-border-hover);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.4), 0 0 40px var(--clr-primary-dim), inset 0 1px 0 rgba(255,255,255,0.08);
+            transform: translateY(-4px);
+        }
+        #aura-bg {
+            position: fixed; top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0; pointer-events: none; overflow: hidden;
+        }
+        .aura-blob {
+            position: absolute; border-radius: 50%;
+            will-change: transform, opacity;
+            filter: blur(80px);
+            mix-blend-mode: screen;
+        }
+        .aura-blob-1 {
+            width: 950px; height: 950px;
+            background: radial-gradient(circle, rgba(77,120,255,0.36) 0%, rgba(77,120,255,0.08) 35%, transparent 70%);
+            top: -280px; left: -200px;
+            animation: auraDrift1 20s ease-in-out infinite alternate;
+        }
+        .aura-blob-2 {
+            width: 800px; height: 800px;
+            background: radial-gradient(circle, rgba(108,92,231,0.3) 0%, rgba(108,92,231,0.06) 35%, transparent 70%);
+            top: 15%; right: -250px;
+            animation: auraDrift2 28s ease-in-out infinite alternate;
+        }
+        .aura-blob-3 {
+            width: 700px; height: 700px;
+            background: radial-gradient(circle, rgba(0,123,255,0.28) 0%, rgba(0,123,255,0.05) 35%, transparent 70%);
+            top: 50%; left: -180px;
+            animation: auraDrift3 38s ease-in-out infinite alternate;
+        }
+        .aura-blob-4 {
+            width: 850px; height: 850px;
+            background: radial-gradient(circle, rgba(0,240,255,0.2) 0%, rgba(0,240,255,0.04) 35%, transparent 70%);
+            bottom: -220px; right: -200px;
+            animation: auraDrift4 14s ease-in-out infinite alternate;
+        }
+        .aura-blob-5 {
+            width: 650px; height: 650px;
+            background: radial-gradient(circle, rgba(138,79,255,0.23) 0%, rgba(138,79,255,0.04) 35%, transparent 70%);
+            top: 35%; left: 40%;
+            animation: auraDrift5 24s ease-in-out infinite alternate;
+        }
+        .aura-blob-6 {
+            width: 550px; height: 550px;
+            background: radial-gradient(circle, rgba(59,130,246,0.18) 0%, rgba(59,130,246,0.03) 35%, transparent 70%);
+            top: 70%; left: 55%;
+            animation: auraDrift6 32s ease-in-out infinite alternate;
+        }
+        @keyframes auraDrift1 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            25%  { transform: translate3d(160px, -195px, 0) scale(1.1) rotate(8deg); }
+            50%  { transform: translate3d(-125px, 140px, 0) scale(0.9) rotate(-7deg); }
+            75%  { transform: translate3d(90px, -105px, 0) scale(1.14) rotate(12deg); }
+            100% { transform: translate3d(-90px, 90px, 0) scale(1) rotate(0deg); }
+        }
+        @keyframes auraDrift2 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            30%  { transform: translate3d(-210px, 160px, 0) scale(1.12) rotate(-10deg); }
+            60%  { transform: translate3d(150px, -130px, 0) scale(0.88) rotate(8deg); }
+            100% { transform: translate3d(-70px, 105px, 0) scale(1.06) rotate(-3deg); }
+        }
+        @keyframes auraDrift3 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            20%  { transform: translate3d(130px, 175px, 0) scale(1.08) rotate(7deg); }
+            50%  { transform: translate3d(-175px, -90px, 0) scale(0.9) rotate(-10deg); }
+            80%  { transform: translate3d(115px, -150px, 0) scale(1.12) rotate(12deg); }
+            100% { transform: translate3d(-55px, 70px, 0) scale(1) rotate(0deg); }
+        }
+        @keyframes auraDrift4 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            35%  { transform: translate3d(-185px, -165px, 0) scale(1.12) rotate(-12deg); }
+            70%  { transform: translate3d(150px, 115px, 0) scale(0.88) rotate(10deg); }
+            100% { transform: translate3d(-90px, -70px, 0) scale(1.06) rotate(-3deg); }
+        }
+        @keyframes auraDrift5 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            40%  { transform: translate3d(-160px, 200px, 0) scale(1.1) rotate(8deg); }
+            75%  { transform: translate3d(195px, -115px, 0) scale(0.88) rotate(-12deg); }
+            100% { transform: translate3d(-70px, 130px, 0) scale(1.08) rotate(3deg); }
+        }
+        @keyframes auraDrift6 {
+            0%   { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
+            25%  { transform: translate3d(115px, -185px, 0) scale(1.12) rotate(-8deg); }
+            55%  { transform: translate3d(-130px, 150px, 0) scale(0.89) rotate(12deg); }
+            85%  { transform: translate3d(165px, 70px, 0) scale(1.06) rotate(-7deg); }
+            100% { transform: translate3d(-55px, -90px, 0) scale(1) rotate(0deg); }
+        }
+        .reveal-section { opacity: 0; transform: translateY(30px); }
+        #navbar { transition: transform 0.4s var(--ease-out), opacity 0.4s var(--ease-out); will-change: transform; }
+        #nav-glass { transition: opacity 0.4s var(--ease-out); }
+        .nav-link {
+            position: relative; padding: 8px 16px;
+            font-size: 13px; font-weight: 500;
+            color: rgba(255,255,255,0.6);
+            border-radius: 9999px;
+            transition: color 0.3s, background-color 0.3s;
+        }
+        .nav-link:hover { color: #fff; background-color: rgba(255,255,255,0.08); }
+        .nav-link::after {
+            content: ''; position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 1px; background: var(--clr-primary);
+            transition: width 0.3s var(--ease-out);
+        }
+        .nav-link:hover::after { width: 16px; }
+        .ham-btn {
+            width: 44px; height: 44px;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 5px; position: relative;
+            border-radius: 12px; background: transparent;
+            border: 1px solid transparent;
+            transition: all 0.4s var(--ease-out);
+            -webkit-tap-highlight-color: transparent; cursor: pointer;
+        }
+        .ham-btn:active { transform: scale(0.92); }
+        .ham-btn .ham-line {
+            display: block; width: 20px; height: 1.5px;
+            background: white; border-radius: 4px;
+            transition: all 0.5s var(--ease-out);
+            transform-origin: center; position: absolute;
+        }
+        .ham-btn .ham-line:nth-child(1) { transform: translateY(-6px); }
+        .ham-btn .ham-line:nth-child(2) { transform: translateY(0); }
+        .ham-btn .ham-line:nth-child(3) { transform: translateY(6px); }
+        .ham-btn.ham-open .ham-line:nth-child(1) { transform: translateY(0) rotate(45deg); }
+        .ham-btn.ham-open .ham-line:nth-child(2) { opacity: 0; transform: scaleX(0); }
+        .ham-btn.ham-open .ham-line:nth-child(3) { transform: translateY(0) rotate(-45deg); }
+        .ham-btn.ham-open { background: rgba(77,120,255,0.12); border-color: rgba(77,120,255,0.25); }
+        .ham-btn .ham-glow {
+            position: absolute; inset: -4px; border-radius: 16px;
+            background: radial-gradient(circle, rgba(77,120,255,0.25), transparent 70%);
+            opacity: 0; transition: opacity 0.4s; pointer-events: none;
+        }
+        .ham-btn.ham-open .ham-glow { opacity: 1; }
+        .mobile-menu-overlay { position: fixed; inset: 0; pointer-events: none; }
+        .mobile-menu-overlay.active { pointer-events: auto; }
+        .menu-backdrop {
+            position: absolute; inset: 0;
+            background: rgba(2,2,8,0.7);
+            backdrop-filter: blur(10px) saturate(120%);
+            -webkit-backdrop-filter: blur(10px) saturate(120%);
+            opacity: 0; transition: opacity 0.5s var(--ease-out);
+        }
+        .mobile-menu-overlay.active .menu-backdrop { opacity: 1; }
+        .menu-panel {
+            position: absolute; inset: 0;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            padding: 80px 32px 48px;
+            opacity: 0; transform: scale(0.96);
+            transition: all 0.5s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-panel { opacity: 1; transform: scale(1); pointer-events: auto; }
+        .menu-ambient {
+            position: absolute; border-radius: 50%;
+            filter: blur(80px); opacity: 0;
+            transition: opacity 0.8s var(--ease-out); pointer-events: none;
+        }
+        .mobile-menu-overlay.active .menu-ambient { opacity: 1; }
+        .menu-nav-item {
+            display: block; font-family: var(--font-display);
+            font-size: clamp(1.75rem, 6vw, 2.5rem); font-weight: 600;
+            color: rgba(255,255,255,0.35); padding: 12px 0;
+            text-decoration: none; position: relative;
+            opacity: 0; transform: translateY(20px);
+            transition: color 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-nav-item:hover, .menu-nav-item:active { color: white; }
+        .menu-nav-item::after {
+            content: ''; position: absolute; left: 0; bottom: 4px;
+            width: 0; height: 2px;
+            background: linear-gradient(90deg, var(--clr-primary), var(--accent-cyan));
+            border-radius: 2px; transition: width 0.4s var(--ease-out);
+            box-shadow: 0 0 8px var(--clr-primary);
+        }
+        .menu-nav-item:hover::after, .menu-nav-item:active::after { width: 100%; }
+        .menu-nav-item .item-index {
+            display: inline-block; font-size: 10px; font-family: var(--font-base);
+            font-weight: 500; color: var(--clr-primary);
+            margin-right: 12px; min-width: 20px; letter-spacing: 0.05em;
+        }
+        .menu-nav-item .item-arrow {
+            display: inline-block; margin-left: 12px;
+            opacity: 0; transform: translateX(-8px);
+            transition: all 0.3s var(--ease-out);
+        }
+        .menu-nav-item:hover .item-arrow { opacity: 0.5; transform: translateX(0); }
+        .menu-cta-btn {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 14px 36px; background: var(--clr-primary);
+            color: white; font-weight: 600; font-size: 15px;
+            border-radius: 9999px; text-decoration: none;
+            position: relative; overflow: hidden;
+            opacity: 0; transform: translateY(20px);
+            box-shadow: 0 0 30px rgba(77,120,255,0.25);
+            transition: transform 0.3s var(--ease-out);
+            -webkit-tap-highlight-color: transparent;
+        }
+        .menu-cta-btn:active { transform: scale(0.96) translateY(0); }
+        ::selection { background: rgba(77, 120, 255, 0.3); color: white; }
+
+        /* ─── Markdown Content Styling ─── */
+        .md-container {
+            line-height: 1.8;
+            color: #e0e0ec;
+        }
+        .md-container h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: white;
+            margin-top: 2.5em;
+            margin-bottom: 1em;
+            padding-bottom: 0.5em;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+        }
+        .md-container h1:first-child { margin-top: 0; }
+        .md-container h2 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: white;
+            margin-top: 2em;
+            margin-bottom: 0.8em;
+            padding-bottom: 0.4em;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .md-container h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            color: rgba(255,255,255,0.95);
+            margin-top: 1.5em;
+            margin-bottom: 0.6em;
+        }
+        .md-container h4 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: rgba(255,255,255,0.9);
+            margin-top: 1.2em;
+            margin-bottom: 0.5em;
+        }
+        .md-container p { margin-bottom: 1em; }
+        .md-container a {
+            color: #4d78ff;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+            transition: opacity 0.2s;
+        }
+        .md-container a:hover { opacity: 0.8; }
+        .md-container ul, .md-container ol {
+            margin: 0.8em 0 1.2em 1.5em;
+        }
+        .md-container li { margin-bottom: 0.3em; }
+        .md-container li::marker { color: var(--clr-primary); }
+        .md-container blockquote {
+            border-left: 3px solid var(--clr-primary);
+            margin: 1.2em 0;
+            padding: 0.6em 1em;
+            background: rgba(77,120,255,0.04);
+            border-radius: 0 8px 8px 0;
+            color: rgba(255,255,255,0.75);
+        }
+        .md-container blockquote p:last-child { margin-bottom: 0; }
+        .md-container code {
+            background: rgba(255,255,255,0.06);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            color: #e0e0ff;
+        }
+        .md-container pre {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 12px;
+            padding: 1.2em;
+            overflow-x: auto;
+            margin: 1.2em 0;
+            -webkit-overflow-scrolling: touch;
+        }
+        .md-container pre code {
+            background: none;
+            padding: 0;
+            border-radius: 0;
+            font-size: 0.85em;
+            line-height: 1.6;
+            color: #c0c0e0;
+        }
+        .md-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.2em 0;
+            overflow-x: auto;
+            display: block;
+            -webkit-overflow-scrolling: touch;
+        }
+        .md-container table thead {
+            background: rgba(255,255,255,0.03);
+        }
+        .md-container th, .md-container td {
+            padding: 0.6em 1em;
+            text-align: left;
+            border: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
+        }
+        .md-container th {
+            font-weight: 600;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.85em;
+        }
+        .md-container td {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.85em;
+        }
+        .md-container img { max-width: 100%; border-radius: 8px; margin: 1em 0; }
+        .md-container hr {
+            border: none;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            margin: 2em 0;
+        }
+        .md-container > *:first-child { margin-top: 0; }
+
+        /* ─── Skeleton Loader ─── */
+        .skeleton-line {
+            height: 14px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+        .skeleton-line:nth-child(1) { width: 75%; }
+        .skeleton-line:nth-child(2) { width: 50%; }
+        .skeleton-line:nth-child(3) { width: 90%; }
+        .skeleton-line:nth-child(4) { width: 40%; }
+        .skeleton-line:nth-child(5) { width: 85%; }
+        .skeleton-line:nth-child(6) { width: 35%; }
+        .skeleton-line:nth-child(7) { width: 70%; }
+        .skeleton-line:nth-child(8) { width: 55%; }
+        .skeleton-line:nth-child(9) { width: 80%; }
+        .skeleton-line:nth-child(10) { width: 45%; }
+        .skeleton-line:nth-child(11) { width: 65%; }
+        .skeleton-line:nth-child(12) { width: 30%; }
+
+        .perf-reduced *, .perf-reduced *::before, .perf-reduced *::after {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+        .perf-low .aura-blob { filter: blur(65px) !important; opacity: 0.7; }
+        .perf-low .glass { backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); }
+        .perf-low .glass-card { backdrop-filter: blur(10px) saturate(120%); -webkit-backdrop-filter: blur(10px) saturate(120%); }
+        .perf-low #noise-overlay { display: none; }
+        .perf-low .shimmer { animation: none !important; }
+        .perf-low .animate-pulse { animation: none !important; opacity: 0.5; }
+
+        .aura-blob {
+            transform: translateZ(0);
+            -webkit-transform: translateZ(0);
+        }
+        .glass, .glass-card, .aura-blob {
+            contain: layout paint style;
+        }
+        .aura-blob.out-viewport { animation-play-state: paused !important; }
+    </style>
+</head>
+<body style="background: linear-gradient(180deg, #020208 0%, #06060e 50%, #0a0a14 100%);">
+
+    <div id="aura-bg">
+        <div class="aura-blob aura-blob-1"></div>
+        <div class="aura-blob aura-blob-2"></div>
+        <div class="aura-blob aura-blob-3"></div>
+        <div class="aura-blob aura-blob-4"></div>
+        <div class="aura-blob aura-blob-5"></div>
+        <div class="aura-blob aura-blob-6"></div>
+    </div>
+
+    <div id="noise-overlay"></div>
+    <div id="scroll-progress"></div>
+
+    <div id="app"></div>
+
+    <script src="js/app.js"></script>
+    <script>
+    (function() {
+        'use strict';
+
+        const app = document.getElementById('app');
+
+        async function init() {
+            app.innerHTML = `
+                ${EuclidApp.buildNavbar('changelogs')}
+                ${EuclidApp.buildMobileMenu('changelogs')}
+
+                <!-- Hero -->
+                <header class="relative pt-32 pb-20 px-6 text-center overflow-hidden">
+                    <div class="absolute inset-0 z-0">
+                        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-euclid/10 rounded-full blur-[120px] pointer-events-none"></div>
+                    </div>
+                    <div class="relative z-10 max-w-3xl mx-auto">
+                        <div class="inline-flex items-center gap-2.5 bg-white/[0.04] border border-white/[0.08] rounded-full px-4 py-2 mb-8 reveal-section">
+                            <span class="relative flex h-2.5 w-2.5">
+                                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-400"></span>
+                            </span>
+                            <span class="text-sm text-gray-300 font-medium tracking-wide">SOURCE CHANGELOGS</span>
+                        </div>
+                        <h1 class="text-4xl md:text-6xl lg:text-7xl font-display font-bold mb-6 reveal-section leading-[1.05]">
+                            What's <span class="text-transparent bg-clip-text bg-gradient-to-r from-euclid to-cyan-400">New</span>.
+                        </h1>
+                        <p class="text-base md:text-lg text-euclid-muted max-w-xl mx-auto mb-10 reveal-section leading-relaxed">
+                            Track the latest changes, improvements, and features across EuclidOS source.
+                        </p>
+                        <div id="changelog-badge" class="reveal-section"></div>
+                    </div>
+                </header>
+
+                <!-- Changelog Content -->
+                <main class="max-w-4xl mx-auto px-6 pb-24 relative z-10">
+                    <div id="changelog-content" class="glass-card rounded-[2rem] p-8 md:p-12 reveal-section">
+                        <div class="animate-pulse">
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                            <div class="skeleton-line"></div>
+                        </div>
+                    </div>
+                </main>
+
+                ${EuclidApp.buildFooter()}
+            `;
+
+            const contentEl = document.getElementById('changelog-content');
+            const badgeEl = document.getElementById('changelog-badge');
+
+            try {
+                const md = await EuclidApp.fetchSourceChangelog();
+                if (md) {
+                    const html = EuclidApp.renderMarkdown(md);
+                    contentEl.innerHTML = '<div class="md-container">' + html + '</div>';
+
+                    // Extract first heading for last updated badge
+                    const h1Match = md.match(/^#\s+(.+)/m);
+                    if (h1Match) {
+                        badgeEl.innerHTML = '<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border border-euclid/30 text-euclid bg-euclid/[0.06]">' + h1Match[1] + '</span>';
+                    }
+                } else {
+                    contentEl.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="text-5xl mb-4 opacity-30">&#128196;</div>
+                            <h3 class="text-xl font-display font-bold text-gray-500 mb-2">No changelog available</h3>
+                            <p class="text-sm text-gray-600">The changelog could not be loaded. Please try again later.</p>
+                        </div>
+                    `;
+                }
+            } catch (e) {
+                contentEl.innerHTML = `
+                    <div class="text-center py-12">
+                        <div class="text-5xl mb-4 opacity-30">&#9888;&#65039;</div>
+                        <h3 class="text-xl font-display font-bold text-gray-500 mb-2">Failed to load changelog</h3>
+                        <p class="text-sm text-gray-600 mb-6">An error occurred while fetching the changelog.</p>
+                        <button onclick="location.reload()" class="px-6 py-3 bg-euclid/10 text-euclid font-semibold rounded-xl border border-euclid/20 hover:bg-euclid/20 transition-all duration-300 text-sm">Try Again</button>
+                    </div>
+                `;
+            }
+
+            EuclidApp.initUI();
+            if (EuclidApp.Perf) { EuclidApp.Perf.init(); }
+        }
+
+        init();
+    })();
+    </script>
+</body>
+</html>
