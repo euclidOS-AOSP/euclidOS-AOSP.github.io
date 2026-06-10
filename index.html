@@ -115,6 +115,7 @@
             width: 6px; height: 6px;
             border-radius: 50%; background: var(--glow);
             position: fixed; pointer-events: none; z-index: 99999;
+            transform: translate(-50%, -50%);
             will-change: transform;
             mix-blend-mode: screen;
             transition: width 0.2s, height 0.2s, opacity 0.2s;
@@ -123,6 +124,7 @@
             width: 36px; height: 36px;
             border: 1px solid rgba(255,255,255,0.15); border-radius: 50%;
             position: fixed; pointer-events: none; z-index: 99998;
+            transform: translate(-50%, -50%);
             will-change: transform;
             transition: width 0.3s var(--ease-out), height 0.3s var(--ease-out), border-color 0.3s;
         }
@@ -1617,7 +1619,8 @@
             document.addEventListener('mousemove', (e) => {
                 mouseX = e.clientX; mouseY = e.clientY;
                 if (cursorDot) {
-                    cursorDot.style.transform = 'translate3d(' + mouseX + 'px,' + mouseY + 'px,0) translate(-50%,-50%)';
+                    cursorDot.style.left = mouseX + 'px';
+                    cursorDot.style.top = mouseY + 'px';
                 }
                 if (!cursorActive) {
                     cursorActive = true;
@@ -1629,7 +1632,8 @@
                 ringX += (mouseX - ringX) * 0.12;
                 ringY += (mouseY - ringY) * 0.12;
                 if (cursorRing) {
-                    cursorRing.style.transform = 'translate3d(' + ringX + 'px,' + ringY + 'px,0) translate(-50%,-50%)';
+                    cursorRing.style.left = ringX + 'px';
+                    cursorRing.style.top = ringY + 'px';
                 }
                 if (Math.abs(mouseX - ringX) > 2 || Math.abs(mouseY - ringY) > 2) {
                     requestAnimationFrame(animateCursor);
