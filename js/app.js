@@ -77,16 +77,6 @@ const EuclidApp = (() => {
         return await fetchMarkdown(`instructions/${codename}.md`);
     }
 
-    async function getDevicesWithDownloads() {
-        const devices = await getDevices();
-        const results = [];
-        for (const device of devices) {
-            const dl = await getDownloadInfo(device.codename);
-            if (dl) results.push({ ...device, download: dl });
-        }
-        return results;
-    }
-
     // ─── Markdown Rendering ───
     function renderMarkdown(md) {
         if (!md) return '';
@@ -224,7 +214,6 @@ const EuclidApp = (() => {
             <div class="hidden md:flex items-center gap-1 bg-white/[0.04] backdrop-blur-xl rounded-full px-1.5 py-1 border border-white/[0.06]">
                 <a href="index.html" class="nav-link ${getActiveClass(currentPage, 'home')}">Home</a>
                 <a href="devices.html" class="nav-link ${getActiveClass(currentPage, 'devices')}">Devices</a>
-                <a href="downloads.html" class="nav-link ${getActiveClass(currentPage, 'downloads')}">Downloads</a>
                 <a href="screenshots.html" class="nav-link ${getActiveClass(currentPage, 'screenshots')}">Screenshots</a>
             </div>
             <div class="hidden md:flex items-center gap-3">
@@ -250,8 +239,7 @@ const EuclidApp = (() => {
             <nav class="flex flex-col items-center text-center mb-12">
                 <a href="index.html" class="menu-nav-item" data-index="0"><span class="item-index">01</span>Home<span class="item-arrow">&rarr;</span></a>
                 <a href="devices.html" class="menu-nav-item" data-index="1"><span class="item-index">02</span>Devices<span class="item-arrow">&rarr;</span></a>
-                <a href="downloads.html" class="menu-nav-item" data-index="2"><span class="item-index">03</span>Downloads<span class="item-arrow">&rarr;</span></a>
-                <a href="screenshots.html" class="menu-nav-item" data-index="3"><span class="item-index">04</span>Screenshots<span class="item-arrow">&rarr;</span></a>
+                <a href="screenshots.html" class="menu-nav-item" data-index="2"><span class="item-index">03</span>Screenshots<span class="item-arrow">&rarr;</span></a>
             </nav>
             <a href="devices.html" class="menu-cta-btn">Get EuclidOS</a>
         </div>
@@ -279,7 +267,6 @@ const EuclidApp = (() => {
                     <ul class="space-y-2.5">
                         <li><a href="index.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Home</a></li>
                         <li><a href="devices.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Devices</a></li>
-                        <li><a href="downloads.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Downloads</a></li>
                         <li><a href="screenshots.html" class="text-sm text-euclid-muted hover:text-white transition duration-300">Screenshots</a></li>
                     </ul>
                 </div>
@@ -466,7 +453,6 @@ const EuclidApp = (() => {
         getDownloadInfo,
         getChangelog,
         getInstructions,
-        getDevicesWithDownloads,
         renderMarkdown,
         buildNavbar,
         buildMobileMenu,
